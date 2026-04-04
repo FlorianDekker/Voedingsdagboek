@@ -4,6 +4,7 @@ import BottomNav from './components/layout/BottomNav'
 import PageContainer from './components/layout/PageContainer'
 import DagboekPage from './pages/DagboekPage'
 import InvoerPage from './pages/InvoerPage'
+import MaaltijdenPage from './pages/MaaltijdenPage'
 import AnalysePage from './pages/AnalysePage'
 import InstellingenPage from './pages/InstellingenPage'
 
@@ -40,6 +41,7 @@ function App() {
         <Routes>
           <Route path="/" element={<PageContainer title="Dagboek"><DagboekPage /></PageContainer>} />
           <Route path="/invoer" element={<PageContainer title="Invoer"><InvoerPage /></PageContainer>} />
+          <Route path="/maaltijden" element={<PageContainer title="Maaltijden"><MaaltijdenPage /></PageContainer>} />
           <Route path="/analyse" element={<PageContainer title="Analyse"><AnalysePage /></PageContainer>} />
           <Route path="/instellingen" element={<PageContainer title="Instellingen"><InstellingenPage /></PageContainer>} />
         </Routes>
