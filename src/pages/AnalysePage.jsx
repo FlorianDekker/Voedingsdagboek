@@ -4,9 +4,9 @@ import FoodRiskTable from '../components/analyse/FoodRiskTable'
 import { analyzeCorrelations, getDailySeverity } from '../utils/correlation'
 
 const RANGES = [
-  { value: 7, label: '7 dagen' },
-  { value: 30, label: '30 dagen' },
-  { value: 90, label: '90 dagen' },
+  { value: 7, label: '7d' },
+  { value: 30, label: '30d' },
+  { value: 90, label: '90d' },
   { value: 0, label: 'Alles' },
 ]
 
@@ -31,21 +31,25 @@ export default function AnalysePage() {
   }, [range])
 
   if (loading) {
-    return <p className="text-center text-gray-400 text-sm py-8">Laden...</p>
+    return (
+      <div className="flex justify-center py-12">
+        <div className="w-5 h-5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Range selector */}
-      <div className="flex gap-2">
+      <div className="flex bg-gray-100 rounded-xl p-1">
         {RANGES.map(({ value, label }) => (
           <button
             key={value}
             onClick={() => setRange(value)}
-            className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all ${
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
               range === value
-                ? 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-300'
-                : 'bg-gray-50 text-gray-500'
+                ? 'bg-white text-emerald-600 shadow-sm'
+                : 'text-gray-400'
             }`}
           >
             {label}
@@ -54,14 +58,14 @@ export default function AnalysePage() {
       </div>
 
       {/* Severity over time chart */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h2 className="text-sm font-medium text-gray-600 mb-3">Klachten over tijd</h2>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-gray-100/50">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Klachten over tijd</h2>
         <SeverityChart data={dailyData} />
       </div>
 
       {/* Food risk analysis */}
-      <div className="bg-white rounded-xl p-4 shadow-sm">
-        <h2 className="text-sm font-medium text-gray-600 mb-3">Voedsel analyse</h2>
+      <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-gray-100/50">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Voedsel analyse</h2>
         <FoodRiskTable correlations={correlations} />
       </div>
     </div>

@@ -10,29 +10,33 @@ export default function DaySelector({ date, onChange }) {
   const isToday = isSameDay(date, new Date())
 
   return (
-    <div className="flex items-center justify-between mb-4 bg-white rounded-xl px-3 py-2 shadow-sm">
+    <div className="flex items-center justify-between mb-5 bg-white/80 backdrop-blur-sm rounded-2xl px-4 py-3 shadow-sm border border-gray-100/50">
       <button
         onClick={() => shift(-1)}
-        className="p-2 text-gray-400 hover:text-gray-600 active:scale-90 transition-transform"
+        className="p-2 -ml-1 text-gray-300 hover:text-gray-500 active:scale-90 transition-all rounded-xl"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
       </button>
 
       <button
         onClick={() => onChange(new Date())}
-        className="text-sm font-medium text-gray-700 capitalize"
+        className="text-sm font-semibold text-gray-800 capitalize tracking-tight"
       >
-        {isToday ? 'Vandaag' : formatDate(date)}
+        {isToday ? (
+          <span className="text-emerald-600">Vandaag</span>
+        ) : (
+          formatDate(date)
+        )}
       </button>
 
       <button
         onClick={() => shift(1)}
         disabled={isToday}
-        className="p-2 text-gray-400 hover:text-gray-600 active:scale-90 transition-transform disabled:opacity-30"
+        className="p-2 -mr-1 text-gray-300 hover:text-gray-500 active:scale-90 transition-all rounded-xl disabled:opacity-20"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
         </svg>
       </button>

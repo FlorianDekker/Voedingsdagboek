@@ -1,15 +1,17 @@
 const RISK_STYLES = {
-  hoog: { bg: 'bg-red-50', text: 'text-red-600', label: 'Hoog risico', dot: 'bg-red-400' },
-  midden: { bg: 'bg-yellow-50', text: 'text-yellow-600', label: 'Mogelijk', dot: 'bg-yellow-400' },
-  laag: { bg: 'bg-green-50', text: 'text-green-600', label: 'Veilig', dot: 'bg-green-400' },
+  hoog: { bg: 'bg-red-50/80', text: 'text-red-500', label: 'Hoog risico', barColor: '#ef4444' },
+  midden: { bg: 'bg-amber-50/80', text: 'text-amber-500', label: 'Mogelijk', barColor: '#f59e0b' },
+  laag: { bg: 'bg-emerald-50/80', text: 'text-emerald-500', label: 'Veilig', barColor: '#10b981' },
 }
 
 export default function FoodRiskTable({ correlations }) {
   if (correlations.length === 0) {
     return (
-      <p className="text-gray-400 text-xs text-center py-6">
-        Registreer minstens 3x hetzelfde eten + klachten om een analyse te zien
-      </p>
+      <div className="text-center py-8">
+        <p className="text-gray-300 text-xs">
+          Registreer minstens 3x hetzelfde eten + klachten
+        </p>
+      </div>
     )
   }
 
@@ -17,20 +19,25 @@ export default function FoodRiskTable({ correlations }) {
     <div className="space-y-2">
       {correlations.map((item) => {
         const style = RISK_STYLES[item.riskLevel]
+        const pct = Math.round(item.followRate * 100)
         return (
           <div
             key={item.food}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg ${style.bg}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl ${style.bg} overflow-hidden relative`}
           >
-            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${style.dot}`} />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-800 capitalize truncate">{item.food}</p>
-              <p className="text-xs text-gray-500">
-                {item.timesEaten}x gegeten &middot; {item.timesFollowed}x klachten
-                &middot; {Math.round(item.followRate * 100)}%
+            {/* Progress bar background */}
+            <div
+              className="absolute inset-y-0 left-0 opacity-10"
+              style={{ width: `${pct}%`, backgroundColor: style.barColor }}
+            />
+
+            <div className="flex-1 min-w-0 relative">
+              <p className="text-sm font-semibold text-gray-800 capitalize truncate">{item.food}</p>
+              <p className="text-[10px] text-gray-400 font-medium">
+                {item.timesEaten}x gegeten &middot; {pct}% klachten
               </p>
             </div>
-            <span className={`text-xs font-medium ${style.text} flex-shrink-0`}>
+            <span className={`text-[10px] font-bold uppercase tracking-wider ${style.text} flex-shrink-0 relative`}>
               {style.label}
             </span>
           </div>

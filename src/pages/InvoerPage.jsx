@@ -13,24 +13,24 @@ export default function InvoerPage() {
 
   return (
     <div>
-      {/* Mode toggle */}
-      <div className="flex gap-2 mb-6">
+      {/* Segmented control */}
+      <div className="flex bg-gray-100 rounded-2xl p-1 mb-6">
         <button
           onClick={() => setMode('maaltijd')}
-          className={`flex-1 py-3 rounded-xl font-medium text-base transition-all ${
+          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
             mode === 'maaltijd'
-              ? 'bg-emerald-500 text-white shadow-md'
-              : 'bg-gray-100 text-gray-500'
+              ? 'bg-white text-emerald-600 shadow-sm'
+              : 'text-gray-400'
           }`}
         >
           Eten
         </button>
         <button
           onClick={() => setMode('klacht')}
-          className={`flex-1 py-3 rounded-xl font-medium text-base transition-all ${
+          className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
             mode === 'klacht'
-              ? 'bg-red-400 text-white shadow-md'
-              : 'bg-gray-100 text-gray-500'
+              ? 'bg-white text-red-500 shadow-sm'
+              : 'text-gray-400'
           }`}
         >
           Klacht
@@ -38,26 +38,20 @@ export default function InvoerPage() {
       </div>
 
       {/* Input form */}
-      {mode === 'maaltijd' ? (
-        <FoodInput onSaved={() => showToast('Maaltijd opgeslagen!')} />
-      ) : (
-        <SymptomInput onSaved={() => showToast('Klacht opgeslagen!')} />
-      )}
+      <div className="animate-fade-in" key={mode}>
+        {mode === 'maaltijd' ? (
+          <FoodInput onSaved={(msg) => showToast(msg || 'Opgeslagen!')} />
+        ) : (
+          <SymptomInput onSaved={() => showToast('Klacht opgeslagen!')} />
+        )}
+      </div>
 
       {/* Toast notification */}
       {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-2.5 rounded-full text-sm font-medium shadow-lg z-50 animate-fade-in">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
           {toast}
         </div>
       )}
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translate(-50%, -10px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
-        }
-        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
-      `}</style>
     </div>
   )
 }

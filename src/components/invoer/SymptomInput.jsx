@@ -24,9 +24,8 @@ export default function SymptomInput({ onSaved }) {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Severity description */}
-      <p className="text-sm text-gray-500 text-center">Hoe voelt je maag?</p>
+    <div className="space-y-5">
+      <p className="text-sm text-gray-400 text-center">Hoe voelt je maag op dit moment?</p>
 
       {/* Severity selector */}
       <div className="flex justify-center gap-3">
@@ -34,15 +33,16 @@ export default function SymptomInput({ onSaved }) {
           <button
             key={level}
             onClick={() => setSeverity(level)}
-            className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold transition-all ${
+            className={`w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold transition-all duration-200 ${
               severity === level
-                ? 'scale-110 shadow-lg ring-2 ring-offset-2'
-                : 'opacity-60 hover:opacity-80'
+                ? 'scale-115 shadow-xl ring-3 ring-offset-2'
+                : severity !== null
+                  ? 'opacity-40 scale-95'
+                  : 'opacity-70 hover:opacity-90 hover:scale-105'
             }`}
             style={{
               backgroundColor: SEVERITY_COLORS[level],
-              color: 'white',
-              ringColor: severity === level ? SEVERITY_COLORS[level] : undefined,
+              '--tw-ring-color': SEVERITY_COLORS[level],
             }}
           >
             {level}
@@ -52,7 +52,7 @@ export default function SymptomInput({ onSaved }) {
 
       {/* Severity label */}
       {severity && (
-        <p className="text-center font-medium" style={{ color: SEVERITY_COLORS[severity] }}>
+        <p className="text-center text-sm font-semibold animate-fade-in" style={{ color: SEVERITY_COLORS[severity] }}>
           {SEVERITY_LABELS[severity]}
         </p>
       )}
@@ -63,14 +63,22 @@ export default function SymptomInput({ onSaved }) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Notitie (optioneel)"
-        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-transparent"
+        className="w-full px-4 py-3.5 bg-white border border-gray-200/80 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-red-300/50 focus:border-red-200 transition-all"
       />
 
       {/* Save button */}
       <button
         onClick={handleSave}
         disabled={!severity}
-        className="w-full py-3.5 bg-red-400 text-white rounded-xl font-medium text-base shadow-md hover:bg-red-500 active:scale-[0.98] transition-all disabled:opacity-40 disabled:active:scale-100"
+        className="w-full py-4 rounded-2xl font-semibold text-base text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none disabled:active:scale-100"
+        style={{
+          background: severity
+            ? `linear-gradient(to bottom, ${SEVERITY_COLORS[severity]}, ${SEVERITY_COLORS[severity]}dd)`
+            : '#d1d5db',
+          boxShadow: severity
+            ? `0 10px 25px -5px ${SEVERITY_COLORS[severity]}40`
+            : undefined,
+        }}
       >
         Opslaan
       </button>
