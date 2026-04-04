@@ -73,6 +73,25 @@ html, body {
   animation: gentlePulse 1.5s ease-in-out infinite;
 }
 
+/* Tab swipe slide animations */
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
 /* Safe area for iPhone */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);

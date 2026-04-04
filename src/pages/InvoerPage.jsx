@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
@@ -20,21 +20,57 @@ export default function InvoerPage() {
   const [mode, setMode] = useState('maaltijd')
   const [selectedMeal, setSelectedMeal] = useState(null)
   const [checkedIngredients, setCheckedIngredients] = useState([])
-  const [touchStart, setTouchStart] = useState(null)
+  const [animDir, setAnimDir] = useState(null)
+  const pageRef = useRef(null)
+  const defaultIdx = MEAL_TYPES.findIndex(t => t.value === getDefaultMealType())
+  const activeRef = useRef(defaultIdx)
+  const animatingRef = useRef(false)
 
   const meals = useMealsByCategory(mealType) || []
   const tabIndex = MEAL_TYPES.findIndex(t => t.value === mealType)
 
-  function handleTouchStart(e) { setTouchStart(e.touches[0].clientX) }
-  function handleTouchEnd(e) {
-    if (touchStart === null) return
-    const diff = touchStart - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 60) {
-      if (diff > 0 && tabIndex < MEAL_TYPES.length - 1) setMealType(MEAL_TYPES[tabIndex + 1].value)
-      else if (diff < 0 && tabIndex > 0) setMealType(MEAL_TYPES[tabIndex - 1].value)
-    }
-    setTouchStart(null)
+  function goTo(nextIdx) {
+    if (nextIdx === activeRef.current || animatingRef.current) return
+    animatingRef.current = true
+    setAnimDir(nextIdx > activeRef.current ? 'left' : 'right')
+    activeRef.current = nextIdx
+    setMealType(MEAL_TYPES[nextIdx].value)
+    setTimeout(() => { setAnimDir(null); animatingRef.current = false }, 320)
   }
+
+  useEffect(() => {
+    const el = pageRef.current
+    if (!el) return
+    let startX = null, startY = null, horizontal = null
+    const onStart = e => {
+      const x = e.touches[0].clientX
+      if (x < 24) return
+      startX = x; startY = e.touches[0].clientY; horizontal = null
+    }
+    const onMove = e => {
+      if (startX === null) return
+      const dx = Math.abs(e.touches[0].clientX - startX)
+      const dy = Math.abs(e.touches[0].clientY - startY)
+      if (horizontal === null && (dx > 5 || dy > 5)) horizontal = dx > dy
+      if (horizontal) e.preventDefault()
+    }
+    const onEnd = e => {
+      if (startX === null) return
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = Math.abs(e.changedTouches[0].clientY - startY)
+      startX = null
+      if (!horizontal || Math.abs(dx) < 50 || dy > Math.abs(dx)) return
+      const cur = activeRef.current
+      if (dx < 0 && cur < MEAL_TYPES.length - 1) goTo(cur + 1)
+      else if (dx > 0 && cur > 0) goTo(cur - 1)
+    }
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => { el.removeEventListener('touchstart', onStart); el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd) }
+  }, [])
+
+  const slideClass = animDir === 'left' ? 'animate-slide-in-left' : animDir === 'right' ? 'animate-slide-in-right' : ''
 
   function showToast(message) {
     setToast(message)
@@ -184,7 +220,7 @@ export default function InvoerPage() {
   }
 
   return (
-    <div>
+    <div ref={pageRef}>
       {/* Mode toggle */}
       <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
         <button
@@ -209,10 +245,10 @@ export default function InvoerPage() {
         <div className="animate-fade-in">
           {/* Meal type filter */}
           <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
-            {MEAL_TYPES.map(({ value, label }) => (
+            {MEAL_TYPES.map(({ value, label }, i) => (
               <button
                 key={value}
-                onClick={() => setMealType(value)}
+                onClick={() => goTo(i)}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   mealType === value
                     ? 'bg-white text-emerald-600 shadow-sm'
@@ -225,7 +261,7 @@ export default function InvoerPage() {
           </div>
 
           {/* Meal list */}
-          <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="min-h-[30vh]">
+          <div className={`min-h-[30vh] overflow-hidden touch-pan-y ${slideClass}`}>
           {meals.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-300 text-sm mb-4">

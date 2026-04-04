@@ -8,11 +8,56 @@ export default function MaaltijdenPage() {
   const [showForm, setShowForm] = useState(false)
   const [editingMeal, setEditingMeal] = useState(null)
   const [toast, setToast] = useState(null)
-  const [touchStart, setTouchStart] = useState(null)
-  const contentRef = useRef(null)
+  const [animDir, setAnimDir] = useState(null)
+  const pageRef = useRef(null)
+  const activeRef = useRef(MEAL_TYPES.findIndex(t => t.value === MEAL_TYPES[0].value))
+  const animating = useRef(false)
 
   const meals = useMealsByCategory(activeTab) || []
   const tabIndex = MEAL_TYPES.findIndex(t => t.value === activeTab)
+
+  function goTo(nextIdx) {
+    if (nextIdx === activeRef.current || animating.current) return
+    animating.current = true
+    setAnimDir(nextIdx > activeRef.current ? 'left' : 'right')
+    activeRef.current = nextIdx
+    setActiveTab(MEAL_TYPES[nextIdx].value)
+    setTimeout(() => { setAnimDir(null); animating.current = false }, 320)
+  }
+
+  useEffect(() => {
+    const el = pageRef.current
+    if (!el) return
+    let startX = null, startY = null, horizontal = null
+    const onStart = e => {
+      const x = e.touches[0].clientX
+      if (x < 24) return
+      startX = x; startY = e.touches[0].clientY; horizontal = null
+    }
+    const onMove = e => {
+      if (startX === null) return
+      const dx = Math.abs(e.touches[0].clientX - startX)
+      const dy = Math.abs(e.touches[0].clientY - startY)
+      if (horizontal === null && (dx > 5 || dy > 5)) horizontal = dx > dy
+      if (horizontal) e.preventDefault()
+    }
+    const onEnd = e => {
+      if (startX === null) return
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = Math.abs(e.changedTouches[0].clientY - startY)
+      startX = null
+      if (!horizontal || Math.abs(dx) < 50 || dy > Math.abs(dx)) return
+      const cur = activeRef.current
+      if (dx < 0 && cur < MEAL_TYPES.length - 1) goTo(cur + 1)
+      else if (dx > 0 && cur > 0) goTo(cur - 1)
+    }
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => { el.removeEventListener('touchstart', onStart); el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd) }
+  }, [])
+
+  const slideClass = animDir === 'left' ? 'animate-slide-in-left' : animDir === 'right' ? 'animate-slide-in-right' : ''
 
   function showToast(msg) {
     setToast(msg)
@@ -29,35 +74,18 @@ export default function MaaltijdenPage() {
     setEditingMeal(null)
   }
 
-  function handleTouchStart(e) {
-    setTouchStart(e.touches[0].clientX)
-  }
-
-  function handleTouchEnd(e) {
-    if (touchStart === null) return
-    const diff = touchStart - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 60) {
-      if (diff > 0 && tabIndex < MEAL_TYPES.length - 1) {
-        setActiveTab(MEAL_TYPES[tabIndex + 1].value)
-      } else if (diff < 0 && tabIndex > 0) {
-        setActiveTab(MEAL_TYPES[tabIndex - 1].value)
-      }
-    }
-    setTouchStart(null)
-  }
-
   if (showForm) {
     return <MealForm meal={editingMeal} defaultCategory={activeTab} onClose={handleClose} onSaved={(msg) => { handleClose(); showToast(msg); }} />
   }
 
   return (
-    <div>
+    <div ref={pageRef}>
       {/* Category tabs */}
       <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
-        {MEAL_TYPES.map(({ value, label }) => (
+        {MEAL_TYPES.map(({ value, label }, i) => (
           <button
             key={value}
-            onClick={() => setActiveTab(value)}
+            onClick={() => goTo(i)}
             className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
               activeTab === value
                 ? 'bg-white text-emerald-600 shadow-sm'
@@ -70,12 +98,7 @@ export default function MaaltijdenPage() {
       </div>
 
       {/* Swipeable meal list */}
-      <div
-        ref={contentRef}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        className="min-h-[40vh]"
-      >
+      <div className={`min-h-[40vh] overflow-hidden touch-pan-y ${slideClass}`}>
         {meals.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-300 text-sm">Nog geen maaltijden</p>
