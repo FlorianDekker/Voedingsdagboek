@@ -14,6 +14,17 @@
   <body>
     <div id="root"><p style="padding:20px;font-family:sans-serif;color:#888">Laden...</p></div>
     <script>
+      // Clear stale service workers
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(r) { r.unregister(); });
+        });
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(n) { caches.delete(n); });
+          });
+        }
+      }
       window.onerror = function(msg, src, line, col, err) {
         document.getElementById('root').innerHTML =
           '<div style="padding:20px;font-family:sans-serif">' +
