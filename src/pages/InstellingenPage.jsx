@@ -34,7 +34,11 @@ export default function InstellingenPage() {
       const text = await file.text()
       const data = JSON.parse(text)
       if (data.entries) {
-        await db.entries.bulkPut(data.entries)
+        const entries = data.entries.map(e => ({
+          ...e,
+          timestamp: new Date(e.timestamp),
+        }))
+        await db.entries.bulkPut(entries)
       }
       if (data.foods) {
         await db.foods.bulkPut(data.foods)
