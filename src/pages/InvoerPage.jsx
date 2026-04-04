@@ -5,6 +5,12 @@ import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
 import { Link } from 'react-router-dom'
 import { hasApiKey, fileToBase64, analyzeMealPhoto } from '../utils/gemini'
 
+function toLocalISO(date) {
+  const d = new Date(date)
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
+  return d.toISOString().slice(0, 16)
+}
+
 function getDefaultMealType() {
   const hour = new Date().getHours()
   if (hour < 10) return 'ontbijt'
@@ -30,6 +36,7 @@ export default function InvoerPage() {
   const [aiChecked, setAiChecked] = useState([])
   const [saveAsTemplate, setSaveAsTemplate] = useState(false)
   const [newIngredient, setNewIngredient] = useState('')
+  const [entryDateTime, setEntryDateTime] = useState(() => toLocalISO(new Date()))
   const fileInputRef = useRef(null)
   const pageRef = useRef(null)
   const defaultIdx = MEAL_TYPES.findIndex(t => t.value === getDefaultMealType())
@@ -90,6 +97,7 @@ export default function InvoerPage() {
   function handleSelectMeal(meal) {
     setSelectedMeal(meal)
     setCheckedIngredients([...meal.ingredients])
+    setEntryDateTime(toLocalISO(new Date()))
   }
 
   function toggleIngredient(ing) {
@@ -100,7 +108,7 @@ export default function InvoerPage() {
 
   async function handleConfirmMeal() {
     if (checkedIngredients.length === 0) return
-    const ts = new Date()
+    const ts = new Date(entryDateTime)
     await db.entries.add({
       type: 'maaltijd',
       timestamp: ts,
@@ -125,6 +133,7 @@ export default function InvoerPage() {
     const file = e.target.files?.[0]
     if (!file) return
     e.target.value = ''
+    setEntryDateTime(toLocalISO(new Date()))
     if (!hasApiKey()) {
       showToast('Stel eerst een API-sleutel in via Instellingen')
       return
@@ -169,7 +178,7 @@ export default function InvoerPage() {
   async function handleAiConfirm() {
     const checked = aiIngredients.filter(i => aiChecked.includes(i))
     if (checked.length === 0) return
-    const ts = new Date()
+    const ts = new Date(entryDateTime)
     await db.entries.add({
       type: 'maaltijd',
       timestamp: ts,
@@ -340,6 +349,13 @@ export default function InvoerPage() {
             </div>
           </button>
 
+          <input
+            type="datetime-local"
+            value={entryDateTime}
+            onChange={e => setEntryDateTime(e.target.value)}
+            className="w-full px-4 py-3 mb-4 bg-gray-50 border border-gray-200/80 rounded-xl text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+          />
+
           <button
             onClick={handleAiConfirm}
             disabled={aiChecked.length === 0}
@@ -399,6 +415,13 @@ export default function InvoerPage() {
               )
             })}
           </div>
+
+          <input
+            type="datetime-local"
+            value={entryDateTime}
+            onChange={e => setEntryDateTime(e.target.value)}
+            className="w-full px-4 py-3 mb-4 bg-gray-50 border border-gray-200/80 rounded-xl text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+          />
 
           <button
             onClick={handleConfirmMeal}
