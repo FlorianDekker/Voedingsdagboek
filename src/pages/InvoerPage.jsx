@@ -18,6 +18,8 @@ export default function InvoerPage() {
   const [savedTimestamp, setSavedTimestamp] = useState(null)
   const [toast, setToast] = useState(null)
   const [mode, setMode] = useState('maaltijd')
+  const [selectedMeal, setSelectedMeal] = useState(null)
+  const [checkedIngredients, setCheckedIngredients] = useState([])
 
   const meals = useMealsByCategory(mealType) || []
 
@@ -26,19 +28,37 @@ export default function InvoerPage() {
     setTimeout(() => setToast(null), 2000)
   }
 
-  async function handleSelectMeal(meal) {
+  function handleSelectMeal(meal) {
+    setSelectedMeal(meal)
+    setCheckedIngredients([...meal.ingredients])
+  }
+
+  function toggleIngredient(ing) {
+    setCheckedIngredients(prev =>
+      prev.includes(ing) ? prev.filter(i => i !== ing) : [...prev, ing]
+    )
+  }
+
+  async function handleConfirmMeal() {
+    if (checkedIngredients.length === 0) return
     const ts = new Date()
     await db.entries.add({
       type: 'maaltijd',
       timestamp: ts,
-      description: meal.ingredients.join(', '),
+      description: checkedIngredients.join(', '),
       mealType,
       severity: null,
-      note: meal.name,
+      note: selectedMeal.name,
     })
-
+    setSelectedMeal(null)
+    setCheckedIngredients([])
     setSavedTimestamp(ts)
     setSymptomPrompt(true)
+  }
+
+  function handleCancelMeal() {
+    setSelectedMeal(null)
+    setCheckedIngredients([])
   }
 
   async function handleSeverityTap(level) {
@@ -59,6 +79,63 @@ export default function InvoerPage() {
     setSymptomPrompt(false)
     setSavedTimestamp(null)
     showToast('Maaltijd opgeslagen!')
+  }
+
+  // Ingredient selection screen
+  if (selectedMeal) {
+    return (
+      <div className="animate-scale-in">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-base font-semibold text-gray-800">{selectedMeal.name}</p>
+              <p className="text-xs text-gray-400 mt-0.5">Vink ingrediënten aan of uit</p>
+            </div>
+            <button onClick={handleCancelMeal} className="text-gray-300 hover:text-gray-500 transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div className="space-y-2 mb-5">
+            {selectedMeal.ingredients.map((ing) => {
+              const checked = checkedIngredients.includes(ing)
+              return (
+                <button
+                  key={ing}
+                  onClick={() => toggleIngredient(ing)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                    checked
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      : 'bg-gray-50 text-gray-300 border border-gray-100 line-through'
+                  }`}
+                >
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-all ${
+                    checked ? 'bg-emerald-500' : 'bg-gray-200'
+                  }`}>
+                    {checked && (
+                      <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="capitalize">{ing}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <button
+            onClick={handleConfirmMeal}
+            disabled={checkedIngredients.length === 0}
+            className="w-full py-3.5 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+          >
+            Opslaan ({checkedIngredients.length}/{selectedMeal.ingredients.length})
+          </button>
+        </div>
+      </div>
+    )
   }
 
   // Symptom prompt screen
