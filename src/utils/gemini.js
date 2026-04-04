@@ -58,6 +58,7 @@ export async function analyzeMealPhoto(base64, mimeType) {
 Regels:
 - Alle namen in het Nederlands
 - Ingrediënten in kleine letters
+- De gebruiker eet vegetarisch, gebruik altijd vegetarische varianten (bijv. vegetarische kipstukjes, plantaardige crème fraîche)
 - Schat de zichtbare ingrediënten zo goed mogelijk in
 - Geef alleen geldig JSON terug, geen andere tekst` }
         ]
