@@ -1,29 +1,21 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/db';
-import { startOfDay, endOfDay } from '../utils/formatters';
 
 export function useEntriesForDay(date) {
+  const dayStart = new Date(date);
+  dayStart.setHours(0, 0, 0, 0);
+  const dayEnd = new Date(date);
+  dayEnd.setHours(23, 59, 59, 999);
+
   return useLiveQuery(
     () => db.entries
       .where('timestamp')
-      .between(startOfDay(date), endOfDay(date), true, true)
+      .between(dayStart, dayEnd, true, true)
       .sortBy('timestamp'),
-    [date.toDateString()]
+    [dayStart.getTime()]
   );
 }
 
 export function useAllEntries() {
   return useLiveQuery(() => db.entries.orderBy('timestamp').reverse().toArray());
-}
-
-export function useSymptomEntries() {
-  return useLiveQuery(
-    () => db.entries.where('type').equals('klacht').sortBy('timestamp')
-  );
-}
-
-export function useMealEntries() {
-  return useLiveQuery(
-    () => db.entries.where('type').equals('maaltijd').sortBy('timestamp')
-  );
 }
