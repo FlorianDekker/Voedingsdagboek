@@ -73,7 +73,7 @@ Regels:
     throw new Error('Geen internetverbinding. Probeer opnieuw.');
   }
 
-  const text = response.text?.() || response.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const text = typeof response.text === 'function' ? response.text() : (response.text || response.candidates?.[0]?.content?.parts?.[0]?.text || '');
 
   // Extract JSON from possible markdown code fences
   const jsonMatch = text.match(/\{[\s\S]*\}/);
