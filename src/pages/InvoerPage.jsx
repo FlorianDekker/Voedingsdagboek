@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom'
 function getDefaultMealType() {
   const hour = new Date().getHours()
   if (hour < 10) return 'ontbijt'
-  if (hour < 14) return 'lunch'
-  if (hour < 18) return 'tussendoor'
+  if (hour < 13) return 'lunch'
+  if (hour < 17) return 'tussendoor'
   return 'avondeten'
 }
 
