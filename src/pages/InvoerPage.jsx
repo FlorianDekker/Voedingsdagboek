@@ -133,9 +133,10 @@ export default function InvoerPage() {
   // Ingredient selection screen
   if (selectedMeal) {
     return (
-      <div className="fixed inset-0 z-40 flex items-center justify-center px-5" onClick={handleCancelMeal}>
-        <div className="fixed inset-0 bg-black/20 animate-fade-in" />
-        <div className="relative bg-white rounded-2xl p-5 shadow-xl border border-gray-100 w-full max-w-md animate-scale-in max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+      <div className="fixed inset-0 z-40" onClick={handleCancelMeal}>
+        <div className="fixed inset-0 bg-black/10" />
+        <div className="relative pt-6 px-4" onClick={e => e.stopPropagation()}>
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 animate-scale-in">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-base font-semibold text-gray-800">{selectedMeal.name}</p>
@@ -183,6 +184,7 @@ export default function InvoerPage() {
           >
             Opslaan ({checkedIngredients.length}/{selectedMeal.ingredients.length})
           </button>
+        </div>
         </div>
       </div>
     )
