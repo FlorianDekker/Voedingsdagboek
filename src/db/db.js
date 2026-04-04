@@ -17,10 +17,22 @@ db.version(3).stores({
   entries: '++id, type, timestamp, mealType, [type+timestamp]',
   foods: '++id, &name, count, lastUsed',
   meals: '++id, name, category'
+});
+
+db.version(4).stores({
+  entries: '++id, type, timestamp, mealType, [type+timestamp]',
+  foods: '++id, &name, count, lastUsed',
+  meals: '++id, name, category'
 }).upgrade(async tx => {
-  const count = await tx.table('meals').count();
-  if (count > 0) return;
-  await seedMeals(tx.table('meals'));
+  const table = tx.table('meals');
+  const existing = await table.toArray();
+  const hasBeers = existing.some(m => m.name === 'Biertje' || m.name === 'Alcoholvrij biertje');
+  if (hasBeers) return;
+  const beers = ['lunch', 'avondeten', 'tussendoor'].flatMap(cat => [
+    { name: 'Biertje', category: cat, ingredients: ['Bier'] },
+    { name: 'Alcoholvrij biertje', category: cat, ingredients: ['Alcoholvrij bier'] },
+  ]);
+  await table.bulkAdd(beers);
 });
 
 db.on('populate', tx => seedMeals(tx.table('meals')));
@@ -50,6 +62,11 @@ function seedMeals(table) {
     { name: 'Bakje yoghurt', category: 'tussendoor', ingredients: ['Lactosevrije yoghurt', 'Honing', 'Cashewnoten'] },
     { name: 'Ijs', category: 'tussendoor', ingredients: ['Ijs'] },
     { name: 'Lactosevrije ijs', category: 'tussendoor', ingredients: ['Lactosevrije ijs'] },
+    // Bier (lunch, avondeten, tussendoor)
+    ...['lunch', 'avondeten', 'tussendoor'].flatMap(cat => [
+      { name: 'Biertje', category: cat, ingredients: ['Bier'] },
+      { name: 'Alcoholvrij biertje', category: cat, ingredients: ['Alcoholvrij bier'] },
+    ]),
   ];
   return table.bulkAdd(meals);
 }
