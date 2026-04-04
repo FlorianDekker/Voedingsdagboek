@@ -15,9 +15,10 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', sans-serif;
-  background: linear-gradient(165deg, #f0fdf4 0%, #f9fafb 30%, #faf5ff 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', sans-serif;
+  background: linear-gradient(165deg, #f0fdf4 0%, #f8fafc 35%, #faf5ff 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   color: #1f2937;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -25,6 +26,11 @@ body {
 
 html, body {
   overscroll-behavior: none;
+}
+
+/* Press feedback */
+button, a {
+  transition: opacity 0.12s ease, transform 0.12s ease;
 }
 
 /* Animations */
@@ -44,7 +50,7 @@ html, body {
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
+  from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
 
@@ -54,19 +60,19 @@ html, body {
 }
 
 .animate-slide-up {
-  animation: slideUp 0.3s ease-out;
+  animation: slideUp 0.3s ease-out both;
 }
 
 .animate-slide-down {
-  animation: slideDown 0.25s ease-out;
+  animation: slideDown 0.25s ease-out both;
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.2s ease-out both;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.25s ease-out;
+  animation: scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
 .animate-pulse-gentle {
@@ -96,3 +102,7 @@ html, body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Scrollbar hide utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

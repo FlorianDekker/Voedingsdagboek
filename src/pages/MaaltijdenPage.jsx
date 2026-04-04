@@ -115,7 +115,7 @@ export default function MaaltijdenPage() {
       {/* Add button */}
       <button
         onClick={() => setShowForm(true)}
-        className="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-full shadow-xl shadow-emerald-500/30 flex items-center justify-center text-2xl font-light active:scale-90 transition-transform z-40"
+        className="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 text-white rounded-full shadow-xl shadow-emerald-500/30 flex items-center justify-center text-2xl font-light active:scale-90 transition-all duration-150 z-40 hover:shadow-2xl"
       >
         +
       </button>
@@ -138,13 +138,13 @@ function MealCard({ meal, onEdit, onDeleted }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 flex overflow-hidden active:scale-[0.99] transition-transform">
-      <div className="w-1 flex-shrink-0 bg-emerald-400" />
-      <div className="flex-1 min-w-0 px-4 py-3" onClick={onEdit}>
-        <p className="text-sm font-semibold text-gray-800">{meal.name}</p>
-        <div className="flex flex-wrap gap-1 mt-1.5">
+    <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/40 flex overflow-hidden active:scale-[0.99] transition-all duration-150 hover:shadow-md">
+      <div className="w-[3px] flex-shrink-0 bg-emerald-400 rounded-l-2xl" />
+      <div className="flex-1 min-w-0 px-4 py-3.5" onClick={onEdit}>
+        <p className="text-[14px] font-semibold text-gray-800">{meal.name}</p>
+        <div className="flex flex-wrap gap-1 mt-2">
           {meal.ingredients.map((ing, i) => (
-            <span key={i} className="text-[10px] bg-gray-50 text-gray-400 px-1.5 py-0.5 rounded capitalize">
+            <span key={i} className="text-[10px] bg-emerald-50/60 text-emerald-600/70 px-2 py-0.5 rounded-lg capitalize font-medium">
               {ing}
             </span>
           ))}
@@ -152,7 +152,7 @@ function MealCard({ meal, onEdit, onDeleted }) {
       </div>
       <button
         onClick={handleDelete}
-        className="px-3 text-gray-200 hover:text-red-400 active:text-red-500 transition-colors self-center"
+        className="px-3.5 text-gray-200 hover:text-red-400 active:text-red-500 transition-colors self-center"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

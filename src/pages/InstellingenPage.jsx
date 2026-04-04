@@ -56,9 +56,9 @@ export default function InstellingenPage() {
   return (
     <div className="space-y-3">
       {/* AI section */}
-      <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-1">AI Fotoherkenning</p>
+      <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest px-1 mb-2">AI Fotoherkenning</p>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-4 py-3.5">
+      <div className="bg-white/90 backdrop-blur-sm border border-gray-100/40 rounded-2xl shadow-sm px-4 py-4">
         <div className="flex items-center gap-2">
           <input
             type="password"
@@ -88,7 +88,7 @@ export default function InstellingenPage() {
       <div className="h-4" />
 
       {/* Data section */}
-      <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-1">Data</p>
+      <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest px-1 mb-2">Data</p>
 
       <SettingsButton onClick={handleExport} icon={ExportIcon}>
         Exporteer data
@@ -107,21 +107,21 @@ export default function InstellingenPage() {
 
       <div className="h-4" />
 
-      <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-1">Geavanceerd</p>
+      <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest px-1 mb-2">Geavanceerd</p>
 
       <button
         onClick={handleClear}
-        className="w-full flex items-center gap-3 px-4 py-3.5 bg-white border border-red-100 rounded-2xl text-sm font-medium text-red-400 shadow-sm hover:bg-red-50 active:scale-[0.98] transition-all"
+        className="w-full flex items-center gap-3 px-4 py-4 bg-white/90 backdrop-blur-sm border border-red-100/60 rounded-2xl text-sm font-medium text-red-400 shadow-sm hover:bg-red-50 active:scale-[0.98] transition-all duration-150"
       >
         <TrashIcon />
         Verwijder alle data
       </button>
 
       {/* Info */}
-      <div className="mt-10 text-center text-[10px] text-gray-300 space-y-0.5 leading-relaxed">
-        <p className="font-semibold text-gray-400">Voedingsdagboek v1.0</p>
-        <p>Alle data wordt lokaal opgeslagen.</p>
-        <p>Er wordt niets naar een server gestuurd.</p>
+      <div className="mt-12 text-center text-[10px] text-gray-300 space-y-1 leading-relaxed pb-4">
+        <p className="font-bold text-gray-400 text-[11px]">Voedingsdagboek</p>
+        <p>Alle data wordt lokaal opgeslagen</p>
+        <p>Er wordt niets naar een server gestuurd</p>
       </div>
 
       {/* Toast */}
@@ -138,7 +138,7 @@ function SettingsButton({ children, onClick, icon: Icon }) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-3.5 bg-white border border-gray-100 rounded-2xl text-sm font-medium text-gray-600 shadow-sm hover:bg-gray-50 active:scale-[0.98] transition-all"
+      className="w-full flex items-center gap-3 px-4 py-4 bg-white/90 backdrop-blur-sm border border-gray-100/40 rounded-2xl text-sm font-medium text-gray-600 shadow-sm hover:bg-white active:scale-[0.98] transition-all duration-150"
     >
       {Icon && <Icon />}
       {children}

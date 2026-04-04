@@ -10,29 +10,31 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-white/75 border-t border-gray-200/50 flex justify-around items-center h-20 pt-1 pb-5 z-50 max-w-sm mx-auto">
-      {tabs.map(({ to, label, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={to === '/'}
-          className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-0.5 py-1.5 px-1.5 text-[9px] font-medium transition-all relative ${
-              isActive ? 'text-emerald-600' : 'text-gray-400'
-            }`
-          }
-        >
-          {({ isActive }) => (
-            <>
-              {isActive && (
-                <div className="absolute -top-px left-1/2 -translate-x-1/2 w-8 h-0.5 bg-emerald-500 rounded-full" />
-              )}
-              <Icon className="w-5 h-5" />
-              <span>{label}</span>
-            </>
-          )}
-        </NavLink>
-      ))}
+    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-2xl bg-white/80 border-t border-gray-100/60 z-50">
+      <div className="flex justify-around items-center h-20 pt-1.5 pb-5 max-w-md mx-auto">
+        {tabs.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/'}
+            className={({ isActive }) =>
+              `flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 text-[9px] font-semibold transition-all duration-200 relative ${
+                isActive ? 'text-emerald-600' : 'text-gray-300 hover:text-gray-400'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-emerald-500 rounded-full" />
+                )}
+                <Icon className={`w-[22px] h-[22px] transition-all duration-200 ${isActive ? 'scale-105' : ''}`} />
+                <span className="mt-0.5">{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
     </nav>
   )
 }

@@ -14,50 +14,61 @@ export default function EntryCard({ entry }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 flex overflow-hidden group active:scale-[0.99] transition-transform">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 flex overflow-hidden active:scale-[0.99] transition-all duration-150">
       {/* Color bar */}
-      <div className="w-1 flex-shrink-0" style={{ backgroundColor: barColor }} />
+      <div className="w-[3px] flex-shrink-0 rounded-l-2xl" style={{ backgroundColor: barColor }} />
 
       {/* Content */}
-      <div className="flex-1 min-w-0 px-4 py-3">
+      <div className="flex-1 min-w-0 px-4 py-3.5">
         {isMeal ? (
           <>
+            {entry.note && (
+              <p className="text-[13px] font-semibold text-gray-800 mb-1.5">{entry.note}</p>
+            )}
             <div className="flex flex-wrap gap-1">
               {entry.description.split(', ').map((ing, i) => (
-                <span key={i} className="text-xs bg-emerald-50/80 text-emerald-700 px-2 py-0.5 rounded-md capitalize font-medium">
+                <span key={i} className="text-[11px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-lg capitalize font-medium">
                   {ing}
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-2 mt-1.5">
+            <div className="flex items-center gap-1.5 mt-2">
               {mealLabel && (
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-300">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/70">
                   {mealLabel}
                 </span>
               )}
+              <span className="text-[10px] text-gray-300">•</span>
               <span className="text-[10px] text-gray-300 font-medium">{formatTime(entry.timestamp)}</span>
             </div>
           </>
         ) : (
           <>
-            <div className="flex items-center gap-2">
-              <span
-                className="text-sm font-semibold"
-                style={{ color: SEVERITY_COLORS[entry.severity] }}
+            <div className="flex items-center gap-2.5">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm"
+                style={{ backgroundColor: SEVERITY_COLORS[entry.severity] }}
               >
-                {SEVERITY_LABELS[entry.severity]}
-              </span>
-              <span className="text-[10px] text-gray-300 font-medium">({entry.severity}/5)</span>
+                {entry.severity}
+              </div>
+              <div>
+                <span
+                  className="text-[13px] font-semibold block"
+                  style={{ color: SEVERITY_COLORS[entry.severity] }}
+                >
+                  {SEVERITY_LABELS[entry.severity]}
+                </span>
+                {entry.note && (
+                  <p className="text-[11px] text-gray-400 mt-0.5">{entry.note}</p>
+                )}
+              </div>
             </div>
-            {entry.note && (
-              <p className="text-xs text-gray-400 mt-0.5">{entry.note}</p>
-            )}
-            <span className="text-[10px] text-gray-300 font-medium mt-1 block">{formatTime(entry.timestamp)}</span>
+            <span className="text-[10px] text-gray-300 font-medium mt-2 block">{formatTime(entry.timestamp)}</span>
           </>
         )}
       </div>
 
-      {/* Delete button - always visible on mobile */}
+      {/* Delete */}
       <button
         onClick={handleDelete}
         className="px-3 text-gray-200 hover:text-red-400 active:text-red-500 transition-colors self-center"
