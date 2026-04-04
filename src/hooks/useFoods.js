@@ -18,6 +18,16 @@ export function useFoodSuggestions(query) {
   );
 }
 
+export function useTopFoods() {
+  return useLiveQuery(
+    () => db.foods
+      .orderBy('count')
+      .reverse()
+      .limit(20)
+      .toArray()
+  );
+}
+
 export async function updateFoodCatalog(foodName) {
   const normalized = normalizeFood(foodName);
   const existing = await db.foods.where('name').equals(normalized).first();

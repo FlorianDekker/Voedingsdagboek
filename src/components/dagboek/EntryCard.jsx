@@ -22,10 +22,16 @@ export default function EntryCard({ entry }) {
       <div className="flex-1 min-w-0 px-4 py-3">
         {isMeal ? (
           <>
-            <p className="text-gray-800 text-sm font-medium">{entry.description}</p>
+            <div className="flex flex-wrap gap-1">
+              {entry.description.split(', ').map((ing, i) => (
+                <span key={i} className="text-xs bg-emerald-50/80 text-emerald-700 px-2 py-0.5 rounded-md capitalize font-medium">
+                  {ing}
+                </span>
+              ))}
+            </div>
             <div className="flex items-center gap-2 mt-1.5">
               {mealLabel && (
-                <span className="text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-300">
                   {mealLabel}
                 </span>
               )}

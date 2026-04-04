@@ -1,16 +1,18 @@
 import { useState, useRef } from 'react'
 import { db } from '../../db/db'
-import { useFoodSuggestions, updateFoodCatalog } from '../../hooks/useFoods'
+import { useFoodSuggestions, updateFoodCatalog, useTopFoods } from '../../hooks/useFoods'
 import { MEAL_TYPES, SEVERITY_COLORS } from '../../constants/mealTypes'
 
 export default function FoodInput({ onSaved }) {
-  const [description, setDescription] = useState('')
+  const [ingredients, setIngredients] = useState([])
+  const [inputValue, setInputValue] = useState('')
   const [mealType, setMealType] = useState(getDefaultMealType())
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [symptomPrompt, setSymptomPrompt] = useState(false)
   const [savedTimestamp, setSavedTimestamp] = useState(null)
   const inputRef = useRef(null)
-  const suggestions = useFoodSuggestions(description) || []
+  const suggestions = useFoodSuggestions(inputValue) || []
+  const topFoods = useTopFoods() || []
 
   function getDefaultMealType() {
     const hour = new Date().getHours()
@@ -20,21 +22,44 @@ export default function FoodInput({ onSaved }) {
     return 'avondeten'
   }
 
+  function addIngredient(name) {
+    const trimmed = name.trim().toLowerCase()
+    if (!trimmed || ingredients.includes(trimmed)) return
+    setIngredients([...ingredients, trimmed])
+    setInputValue('')
+    setShowSuggestions(false)
+    inputRef.current?.focus()
+  }
+
+  function removeIngredient(name) {
+    setIngredients(ingredients.filter(i => i !== name))
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && inputValue.trim()) {
+      e.preventDefault()
+      addIngredient(inputValue)
+    }
+  }
+
   async function handleSave() {
-    if (!description.trim()) return
+    if (ingredients.length === 0) return
 
     const ts = new Date()
     await db.entries.add({
       type: 'maaltijd',
       timestamp: ts,
-      description: description.trim(),
+      description: ingredients.join(', '),
       mealType,
       severity: null,
       note: null,
     })
 
-    await updateFoodCatalog(description.trim())
-    setDescription('')
+    for (const ing of ingredients) {
+      await updateFoodCatalog(ing)
+    }
+
+    setIngredients([])
     setSavedTimestamp(ts)
     setSymptomPrompt(true)
   }
@@ -59,12 +84,6 @@ export default function FoodInput({ onSaved }) {
     setSavedTimestamp(null)
     inputRef.current?.focus()
     onSaved?.('Maaltijd opgeslagen!')
-  }
-
-  function selectSuggestion(name) {
-    setDescription(name)
-    setShowSuggestions(false)
-    inputRef.current?.focus()
   }
 
   // Show symptom prompt after food save
@@ -99,41 +118,87 @@ export default function FoodInput({ onSaved }) {
     )
   }
 
+  // Quick-add foods: show top foods that aren't already selected
+  const quickFoods = topFoods.filter(f => !ingredients.includes(f.name))
+
   return (
     <div className="space-y-4">
-      {/* Food description input */}
+      {/* Selected ingredients as chips */}
+      {ingredients.length > 0 && (
+        <div className="flex flex-wrap gap-2 animate-fade-in">
+          {ingredients.map((ing) => (
+            <span
+              key={ing}
+              className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-medium capitalize"
+            >
+              {ing}
+              <button
+                onClick={() => removeIngredient(ing)}
+                className="ml-0.5 text-emerald-400 hover:text-emerald-600"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Input field */}
       <div className="relative">
         <input
           ref={inputRef}
           type="text"
-          value={description}
+          value={inputValue}
           onChange={(e) => {
-            setDescription(e.target.value)
+            setInputValue(e.target.value)
             setShowSuggestions(true)
           }}
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          placeholder="Wat heb je gegeten?"
+          onKeyDown={handleKeyDown}
+          placeholder={ingredients.length > 0 ? 'Nog iets toevoegen...' : 'Zoek ingredient...'}
           className="w-full px-4 py-3.5 bg-white border border-gray-200/80 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
           autoComplete="off"
         />
 
         {/* Autocomplete suggestions */}
-        {showSuggestions && suggestions.length > 0 && description.length > 0 && (
+        {showSuggestions && suggestions.length > 0 && inputValue.length > 0 && (
           <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-40 animate-slide-down">
-            {suggestions.map((food) => (
-              <button
-                key={food.id}
-                onMouseDown={() => selectSuggestion(food.name)}
-                className="w-full text-left px-4 py-3 hover:bg-gray-50 active:bg-gray-100 text-gray-700 border-b border-gray-50 last:border-0 transition-colors"
-              >
-                <span className="capitalize">{food.name}</span>
-                <span className="text-gray-300 text-xs ml-2">{food.count}x</span>
-              </button>
-            ))}
+            {suggestions
+              .filter(f => !ingredients.includes(f.name))
+              .map((food) => (
+                <button
+                  key={food.id}
+                  onMouseDown={() => addIngredient(food.name)}
+                  className="w-full text-left px-4 py-3 hover:bg-gray-50 active:bg-gray-100 text-gray-700 border-b border-gray-50 last:border-0 transition-colors"
+                >
+                  <span className="capitalize">{food.name}</span>
+                  <span className="text-gray-300 text-xs ml-2">{food.count}x</span>
+                </button>
+              ))}
           </div>
         )}
       </div>
+
+      {/* Quick-add frequent ingredients */}
+      {quickFoods.length > 0 && !inputValue && (
+        <div>
+          <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider mb-2">Veelgebruikt</p>
+          <div className="flex flex-wrap gap-1.5">
+            {quickFoods.slice(0, 12).map((food) => (
+              <button
+                key={food.id}
+                onClick={() => addIngredient(food.name)}
+                className="bg-white border border-gray-100 text-gray-500 px-3 py-1.5 rounded-full text-xs font-medium capitalize hover:bg-gray-50 active:scale-95 transition-all shadow-sm"
+              >
+                + {food.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Meal type selector */}
       <div className="grid grid-cols-4 gap-2">
@@ -155,10 +220,10 @@ export default function FoodInput({ onSaved }) {
       {/* Save button */}
       <button
         onClick={handleSave}
-        disabled={!description.trim()}
+        disabled={ingredients.length === 0}
         className="w-full py-4 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl font-semibold text-base shadow-lg shadow-emerald-500/30 hover:shadow-xl active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none disabled:active:scale-100"
       >
-        Opslaan
+        Opslaan{ingredients.length > 0 ? ` (${ingredients.length})` : ''}
       </button>
     </div>
   )
