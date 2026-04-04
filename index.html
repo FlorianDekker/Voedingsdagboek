@@ -12,6 +12,20 @@
     <link rel="stylesheet" crossorigin href="/Voedingsdagboek/assets/index-Ck8wEVrr.css">
   <link rel="manifest" href="/Voedingsdagboek/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/Voedingsdagboek/registerSW.js"></script></head>
   <body>
-    <div id="root"></div>
+    <div id="root"><p style="padding:20px;font-family:sans-serif;color:#888">Laden...</p></div>
+    <script>
+      window.onerror = function(msg, src, line, col, err) {
+        document.getElementById('root').innerHTML =
+          '<div style="padding:20px;font-family:sans-serif">' +
+          '<h2 style="color:red">Error</h2>' +
+          '<pre style="font-size:12px;white-space:pre-wrap">' + msg + '\n' + (src||'') + ':' + line + '</pre></div>';
+      };
+      window.addEventListener('unhandledrejection', function(e) {
+        document.getElementById('root').innerHTML =
+          '<div style="padding:20px;font-family:sans-serif">' +
+          '<h2 style="color:red">Error</h2>' +
+          '<pre style="font-size:12px;white-space:pre-wrap">' + (e.reason && e.reason.message || e.reason || 'Unknown') + '</pre></div>';
+      });
+    </script>
   </body>
 </html>
