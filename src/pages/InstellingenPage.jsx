@@ -1,9 +1,12 @@
 import { useRef, useState } from 'react'
 import { db } from '../db/db'
+import { getApiKey, setApiKey as saveApiKey, hasApiKey } from '../utils/gemini'
 
 export default function InstellingenPage() {
   const fileRef = useRef(null)
   const [toast, setToast] = useState(null)
+  const [apiKey, setApiKey] = useState(getApiKey)
+  const [keySaved, setKeySaved] = useState(hasApiKey)
 
   function showToast(msg) {
     setToast(msg)
@@ -52,6 +55,38 @@ export default function InstellingenPage() {
 
   return (
     <div className="space-y-3">
+      {/* AI section */}
+      <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-1">AI Fotoherkenning</p>
+
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-4 py-3.5">
+        <div className="flex items-center gap-2">
+          <input
+            type="password"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            onBlur={() => { saveApiKey(apiKey.trim()); setKeySaved(!!apiKey.trim()); if (apiKey.trim()) showToast('API-sleutel opgeslagen!') }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.target.blur() } }}
+            placeholder="Gemini API-sleutel"
+            className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+          />
+          {keySaved && (
+            <svg className="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
+        </div>
+        <a
+          href="https://aistudio.google.com/apikey"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block text-[11px] text-emerald-500 mt-2 px-1"
+        >
+          Gratis sleutel ophalen op aistudio.google.com →
+        </a>
+      </div>
+
+      <div className="h-4" />
+
       {/* Data section */}
       <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-1">Data</p>
 
