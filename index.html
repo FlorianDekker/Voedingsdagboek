@@ -2,39 +2,50 @@
 <html lang="nl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/Voedingsdagboek/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#10b981" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voedingsdagboek</title>
   </head>
   <body>
     <div id="root"><p style="padding:20px;font-family:sans-serif;color:#888">Laden...</p></div>
     <script>
-      // Clear stale service workers
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(regs) {
-          regs.forEach(function(r) { r.unregister(); });
-        });
-        if ('caches' in window) {
-          caches.keys().then(function(names) {
-            names.forEach(function(n) { caches.delete(n); });
-          });
-        }
-      }
-      window.onerror = function(msg, src, line, col, err) {
-        document.getElementById('root').innerHTML =
-          '<div style="padding:20px;font-family:sans-serif">' +
-          '<h2 style="color:red">Error</h2>' +
-          '<pre style="font-size:12px;white-space:pre-wrap">' + msg + '\n' + (src||'') + ':' + line + '</pre></div>';
+      var d = document.getElementById('root');
+      var info = [];
+      info.push('URL: ' + location.href);
+      info.push('Base: ' + document.baseURI);
+
+      // Try fetching the JS file to see if it loads
+      var scripts = document.querySelectorAll('script[src]');
+      info.push('Scripts found: ' + scripts.length);
+
+      window.onerror = function(msg, src, line) {
+        d.innerHTML = '<pre style="padding:20px;font-size:12px;white-space:pre-wrap">ONERROR:\n' + msg + '\n' + src + ':' + line + '</pre>';
       };
       window.addEventListener('unhandledrejection', function(e) {
-        document.getElementById('root').innerHTML =
-          '<div style="padding:20px;font-family:sans-serif">' +
-          '<h2 style="color:red">Error</h2>' +
-          '<pre style="font-size:12px;white-space:pre-wrap">' + (e.reason && e.reason.message || e.reason || 'Unknown') + '</pre></div>';
+        d.innerHTML = '<pre style="padding:20px;font-size:12px;white-space:pre-wrap">REJECTION:\n' + (e.reason ? e.reason.stack || e.reason.message || e.reason : 'unknown') + '</pre>';
       });
+
+      // After 3 seconds, if still showing "Laden", show diagnostics
+      setTimeout(function() {
+        if (d.textContent.indexOf('Laden') !== -1) {
+          // Try to fetch the JS file manually
+          var scriptEl = document.querySelector('script[type="module"][src]');
+          var scriptSrc = scriptEl ? scriptEl.getAttribute('src') : 'NO MODULE SCRIPT FOUND';
+          info.push('Module src: ' + scriptSrc);
+
+          if (scriptEl) {
+            fetch(scriptSrc).then(function(r) {
+              info.push('Fetch status: ' + r.status + ' ' + r.statusText);
+              info.push('Content-Type: ' + r.headers.get('content-type'));
+              d.innerHTML = '<pre style="padding:20px;font-size:11px;white-space:pre-wrap;word-break:break-all">' + info.join('\n') + '</pre>';
+            }).catch(function(e) {
+              info.push('Fetch error: ' + e.message);
+              d.innerHTML = '<pre style="padding:20px;font-size:11px;white-space:pre-wrap;word-break:break-all">' + info.join('\n') + '</pre>';
+            });
+          } else {
+            d.innerHTML = '<pre style="padding:20px;font-size:11px;white-space:pre-wrap;word-break:break-all">' + info.join('\n') + '</pre>';
+          }
+        }
+      }, 3000);
     </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
