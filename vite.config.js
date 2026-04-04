@@ -33,8 +33,10 @@ export default defineConfig({
         ]
       },
       workbox: {
-        navigateFallback: '/Voedingsdagboek/index.html',
-        navigateFallbackAllowlist: [/^\/Voedingsdagboek\//]
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
       }
     })
   ],
