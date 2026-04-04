@@ -11,7 +11,8 @@ export function useEntriesForDay(date) {
     () => db.entries
       .where('timestamp')
       .between(dayStart, dayEnd, true, true)
-      .sortBy('timestamp'),
+      .sortBy('timestamp')
+      .then(entries => entries.reverse()),
     [dayStart.getTime()]
   );
 }

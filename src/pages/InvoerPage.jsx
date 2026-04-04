@@ -233,13 +233,7 @@ export default function InvoerPage() {
                   className="w-full bg-white rounded-2xl shadow-sm border border-gray-100/50 px-4 py-3.5 text-left active:scale-[0.98] transition-all"
                 >
                   <p className="text-sm font-semibold text-gray-800">{meal.name}</p>
-                  <div className="flex flex-wrap gap-1 mt-1.5">
-                    {meal.ingredients.map((ing, i) => (
-                      <span key={i} className="text-[10px] bg-emerald-50/80 text-emerald-600 px-1.5 py-0.5 rounded capitalize font-medium">
-                        {ing}
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-[11px] text-gray-400 mt-0.5">{meal.ingredients.length} ingrediënten</p>
                 </button>
               ))}
 
