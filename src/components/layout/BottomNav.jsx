@@ -10,14 +10,14 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-white/75 border-t border-gray-200/50 flex justify-around items-center h-20 pb-4 z-50">
+    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-xl bg-white/75 border-t border-gray-200/50 flex justify-center items-end h-20 pb-2 z-50">
       {tabs.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 text-[9px] font-medium transition-all relative ${
+            `flex flex-col items-center justify-center gap-0.5 pt-2.5 pb-1 px-1 min-w-[56px] text-[9px] font-medium transition-all relative ${
               isActive ? 'text-emerald-600' : 'text-gray-400'
             }`
           }
