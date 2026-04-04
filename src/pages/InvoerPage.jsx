@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
@@ -20,8 +20,21 @@ export default function InvoerPage() {
   const [mode, setMode] = useState('maaltijd')
   const [selectedMeal, setSelectedMeal] = useState(null)
   const [checkedIngredients, setCheckedIngredients] = useState([])
+  const [touchStart, setTouchStart] = useState(null)
 
   const meals = useMealsByCategory(mealType) || []
+  const tabIndex = MEAL_TYPES.findIndex(t => t.value === mealType)
+
+  function handleTouchStart(e) { setTouchStart(e.touches[0].clientX) }
+  function handleTouchEnd(e) {
+    if (touchStart === null) return
+    const diff = touchStart - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 60) {
+      if (diff > 0 && tabIndex < MEAL_TYPES.length - 1) setMealType(MEAL_TYPES[tabIndex + 1].value)
+      else if (diff < 0 && tabIndex > 0) setMealType(MEAL_TYPES[tabIndex - 1].value)
+    }
+    setTouchStart(null)
+  }
 
   function showToast(message) {
     setToast(message)
@@ -195,15 +208,15 @@ export default function InvoerPage() {
       {mode === 'maaltijd' ? (
         <div className="animate-fade-in">
           {/* Meal type filter */}
-          <div className="grid grid-cols-4 gap-2 mb-5">
+          <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
             {MEAL_TYPES.map(({ value, label }) => (
               <button
                 key={value}
                 onClick={() => setMealType(value)}
-                className={`py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   mealType === value
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
-                    : 'bg-white text-gray-400 border border-gray-100'
+                    ? 'bg-white text-emerald-600 shadow-sm'
+                    : 'text-gray-400'
                 }`}
               >
                 {label}
@@ -212,6 +225,7 @@ export default function InvoerPage() {
           </div>
 
           {/* Meal list */}
+          <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} className="min-h-[30vh]">
           {meals.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-300 text-sm mb-4">
@@ -245,6 +259,7 @@ export default function InvoerPage() {
               </Link>
             </div>
           )}
+          </div>
         </div>
       ) : (
         <SymptomOnlyInput onSaved={() => showToast('Klacht opgeslagen!')} />
