@@ -1,13 +1,18 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { db } from '../db/db'
-import { useAllMeals } from '../hooks/useMeals'
+import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES } from '../constants/mealTypes'
 
 export default function MaaltijdenPage() {
-  const meals = useAllMeals() || []
+  const [activeTab, setActiveTab] = useState(MEAL_TYPES[0].value)
   const [showForm, setShowForm] = useState(false)
   const [editingMeal, setEditingMeal] = useState(null)
   const [toast, setToast] = useState(null)
+  const [touchStart, setTouchStart] = useState(null)
+  const contentRef = useRef(null)
+
+  const meals = useMealsByCategory(activeTab) || []
+  const tabIndex = MEAL_TYPES.findIndex(t => t.value === activeTab)
 
   function showToast(msg) {
     setToast(msg)
@@ -24,32 +29,65 @@ export default function MaaltijdenPage() {
     setEditingMeal(null)
   }
 
-  // Group meals by category
-  const grouped = {}
-  for (const mt of MEAL_TYPES) {
-    grouped[mt.value] = meals.filter(m => m.category === mt.value)
+  function handleTouchStart(e) {
+    setTouchStart(e.touches[0].clientX)
+  }
+
+  function handleTouchEnd(e) {
+    if (touchStart === null) return
+    const diff = touchStart - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 60) {
+      if (diff > 0 && tabIndex < MEAL_TYPES.length - 1) {
+        setActiveTab(MEAL_TYPES[tabIndex + 1].value)
+      } else if (diff < 0 && tabIndex > 0) {
+        setActiveTab(MEAL_TYPES[tabIndex - 1].value)
+      }
+    }
+    setTouchStart(null)
   }
 
   if (showForm) {
-    return <MealForm meal={editingMeal} onClose={handleClose} onSaved={(msg) => { handleClose(); showToast(msg); }} />
+    return <MealForm meal={editingMeal} defaultCategory={activeTab} onClose={handleClose} onSaved={(msg) => { handleClose(); showToast(msg); }} />
   }
 
   return (
     <div>
-      {MEAL_TYPES.map(({ value, label }) => (
-        <div key={value} className="mb-6">
-          <p className="text-[10px] font-semibold text-gray-300 uppercase tracking-wider px-1 mb-2">{label}</p>
-          {grouped[value].length === 0 ? (
-            <p className="text-xs text-gray-300 px-1 mb-2">Nog geen maaltijden</p>
-          ) : (
-            <div className="space-y-2 mb-2">
-              {grouped[value].map((meal) => (
-                <MealCard key={meal.id} meal={meal} onEdit={() => handleEdit(meal)} onDeleted={() => showToast('Verwijderd')} />
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+      {/* Category tabs */}
+      <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
+        {MEAL_TYPES.map(({ value, label }) => (
+          <button
+            key={value}
+            onClick={() => setActiveTab(value)}
+            className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
+              activeTab === value
+                ? 'bg-white text-emerald-600 shadow-sm'
+                : 'text-gray-400'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Swipeable meal list */}
+      <div
+        ref={contentRef}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="min-h-[40vh]"
+      >
+        {meals.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-300 text-sm">Nog geen maaltijden</p>
+          </div>
+        ) : (
+          <div className="space-y-2 animate-fade-in">
+            {meals.map((meal) => (
+              <MealCard key={meal.id} meal={meal} onEdit={() => handleEdit(meal)} onDeleted={() => showToast('Verwijderd')} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Add button */}
       <button
@@ -101,9 +139,9 @@ function MealCard({ meal, onEdit, onDeleted }) {
   )
 }
 
-function MealForm({ meal, onClose, onSaved }) {
+function MealForm({ meal, defaultCategory, onClose, onSaved }) {
   const [name, setName] = useState(meal?.name || '')
-  const [category, setCategory] = useState(meal?.category || 'ontbijt')
+  const [category, setCategory] = useState(meal?.category || defaultCategory || 'ontbijt')
   const [ingredients, setIngredients] = useState(meal?.ingredients || [])
   const [inputValue, setInputValue] = useState('')
 
