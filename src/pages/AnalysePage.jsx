@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { computeAllAnalytics } from '../utils/correlation'
 import { generateInsights } from '../utils/insights'
+import { useSwipe } from '../hooks/useSwipe'
 import '../utils/chartSetup'
 
 import SummaryStats from '../components/analyse/SummaryStats'
@@ -21,9 +22,23 @@ const RANGES = [
   { value: 0, label: 'Alles' },
 ]
 
+const RANGE_VALUES = RANGES.map(r => r.value)
+
 export default function AnalysePage() {
   const [range, setRange] = useState(30)
   const entries = useLiveQuery(() => db.entries.toArray())
+
+  const goNextRange = useCallback(() => {
+    const idx = RANGE_VALUES.indexOf(range)
+    if (idx < RANGE_VALUES.length - 1) setRange(RANGE_VALUES[idx + 1])
+  }, [range])
+
+  const goPrevRange = useCallback(() => {
+    const idx = RANGE_VALUES.indexOf(range)
+    if (idx > 0) setRange(RANGE_VALUES[idx - 1])
+  }, [range])
+
+  const swipeHandlers = useSwipe(goNextRange, goPrevRange)
 
   const analytics = useMemo(() => {
     if (!entries) return null
@@ -37,14 +52,14 @@ export default function AnalysePage() {
 
   if (!entries || !analytics) {
     return (
-      <div className="flex justify-center py-12">
+      <div {...swipeHandlers} className="flex justify-center py-12">
         <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5" {...swipeHandlers}>
       {/* Range selector */}
       <div className="flex bg-surface rounded-xl p-1">
         {RANGES.map(({ value, label }) => (

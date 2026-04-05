@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import DaySelector from '../components/dagboek/DaySelector'
 import { useEntriesForDay } from '../hooks/useEntries'
+import { useSwipe } from '../hooks/useSwipe'
 import { db } from '../db/db'
-import { formatTime } from '../utils/formatters'
+import { formatTime, isSameDay } from '../utils/formatters'
 import { MEAL_TYPES, SEVERITY_LABELS, SEVERITY_COLORS } from '../constants/mealTypes'
 
 const MEAL_ICONS = {
@@ -17,9 +18,25 @@ export default function DagboekPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const entries = useEntriesForDay(selectedDate)
 
+  const goNext = useCallback(() => {
+    if (!isSameDay(selectedDate, new Date())) {
+      const d = new Date(selectedDate)
+      d.setDate(d.getDate() + 1)
+      setSelectedDate(d)
+    }
+  }, [selectedDate])
+
+  const goPrev = useCallback(() => {
+    const d = new Date(selectedDate)
+    d.setDate(d.getDate() - 1)
+    setSelectedDate(d)
+  }, [selectedDate])
+
+  const swipeHandlers = useSwipe(goNext, goPrev)
+
   if (entries === undefined) {
     return (
-      <div>
+      <div {...swipeHandlers}>
         <DaySelector date={selectedDate} onChange={setSelectedDate} />
         <div className="flex justify-center py-12">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -31,7 +48,7 @@ export default function DagboekPage() {
   const isEmpty = entries.length === 0
 
   return (
-    <div>
+    <div {...swipeHandlers}>
       <DaySelector date={selectedDate} onChange={setSelectedDate} />
 
       {isEmpty ? (
