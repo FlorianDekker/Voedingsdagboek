@@ -64,10 +64,17 @@ const FOOD_EMOJI = [
 ]
 
 function getFoodEmoji(ingredients, mealType, mealName) {
-  const text = (ingredients.join(' ') + ' ' + (mealName || '')).toLowerCase()
+  // 1. Check meal name first
+  const name = (mealName || '').toLowerCase()
   for (const [keyword, emoji] of FOOD_EMOJI) {
-    if (text.includes(keyword)) return emoji
+    if (name.includes(keyword)) return emoji
   }
+  // 2. Then check ingredients
+  const ingText = ingredients.join(' ').toLowerCase()
+  for (const [keyword, emoji] of FOOD_EMOJI) {
+    if (ingText.includes(keyword)) return emoji
+  }
+  // 3. Fall back to meal type icon
   return MEAL_ICONS[mealType] || '🍽️'
 }
 
