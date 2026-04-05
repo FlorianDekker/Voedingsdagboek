@@ -1,7 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../db/db'
+import { computeAllAnalytics } from '../utils/correlation'
+import { generateInsights } from '../utils/insights'
+import '../utils/chartSetup'
+
+import SummaryStats from '../components/analyse/SummaryStats'
+import InsightCards from '../components/analyse/InsightCards'
 import SeverityChart from '../components/analyse/SeverityChart'
-import FoodRiskTable from '../components/analyse/FoodRiskTable'
-import { analyzeCorrelations, getDailySeverity } from '../utils/correlation'
+import IngredientRiskTable from '../components/analyse/IngredientRiskTable'
+import HourlyChart from '../components/analyse/HourlyChart'
+import WeekdayChart from '../components/analyse/WeekdayChart'
+import MealTypeCard from '../components/analyse/MealTypeCard'
+import StreakCard from '../components/analyse/StreakCard'
 
 const RANGES = [
   { value: 7, label: '7d' },
@@ -12,25 +23,19 @@ const RANGES = [
 
 export default function AnalysePage() {
   const [range, setRange] = useState(30)
-  const [correlations, setCorrelations] = useState([])
-  const [dailyData, setDailyData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const entries = useLiveQuery(() => db.entries.toArray())
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true)
-      const [corr, daily] = await Promise.all([
-        analyzeCorrelations(),
-        getDailySeverity(range || 365),
-      ])
-      setCorrelations(corr)
-      setDailyData(daily)
-      setLoading(false)
-    }
-    load()
-  }, [range])
+  const analytics = useMemo(() => {
+    if (!entries) return null
+    return computeAllAnalytics(entries, range || 0)
+  }, [entries, range])
 
-  if (loading) {
+  const insights = useMemo(() => {
+    if (!analytics) return []
+    return generateInsights(analytics)
+  }, [analytics])
+
+  if (!entries || !analytics) {
     return (
       <div className="flex justify-center py-12">
         <div className="w-5 h-5 border-2 border-green-accent border-t-transparent rounded-full animate-spin" />
@@ -57,16 +62,54 @@ export default function AnalysePage() {
         ))}
       </div>
 
-      {/* Severity over time chart */}
+      {/* Summary stats */}
+      <SummaryStats summary={analytics.summary} />
+
+      {/* Auto-generated insights */}
+      {insights.length > 0 && <InsightCards insights={insights} />}
+
+      {/* Severity over time */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
         <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-4">Klachten over tijd</h2>
-        <SeverityChart data={dailyData} />
+        <SeverityChart data={analytics.dailySeverity} movingAverage={analytics.movingAverage} />
       </div>
 
-      {/* Food risk analysis */}
+      {/* Ingredient analysis */}
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-4">Voedsel analyse</h2>
-        <FoodRiskTable correlations={correlations} />
+        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
+        <p className="text-[10px] text-sand-300/70 mb-4">
+          {analytics.baselineRate > 0
+            ? `Baseline: ${Math.round(analytics.baselineRate * 100)}% van maaltijden gevolgd door klachten`
+            : 'Geen baseline beschikbaar'}
+        </p>
+        <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
+      </div>
+
+      {/* Patterns section */}
+      <div>
+        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-3 px-1">Patronen</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-sand-200/60">
+            <p className="text-[10px] font-semibold text-sand-300 uppercase tracking-wider mb-3">Per uur</p>
+            <HourlyChart data={analytics.hourlyPattern} />
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-sand-200/60">
+            <p className="text-[10px] font-semibold text-sand-300 uppercase tracking-wider mb-3">Per dag</p>
+            <WeekdayChart data={analytics.weekdayPattern} />
+          </div>
+        </div>
+      </div>
+
+      {/* Meal type breakdown */}
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
+        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-4">Per maaltijdtype</h2>
+        <MealTypeCard data={analytics.mealTypePattern} />
+      </div>
+
+      {/* Streaks */}
+      <div>
+        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-3 px-1">Reeksen</h2>
+        <StreakCard streaks={analytics.streaks} />
       </div>
     </div>
   )
