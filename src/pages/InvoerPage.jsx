@@ -28,6 +28,11 @@ export default function InvoerPage() {
   const [selectedMeal, setSelectedMeal] = useState(null)
   const [checkedIngredients, setCheckedIngredients] = useState([])
   const [animDir, setAnimDir] = useState(null)
+  const [quickEntry, setQuickEntry] = useState(false)
+  const [quickName, setQuickName] = useState('')
+  const [quickIngredients, setQuickIngredients] = useState([])
+  const [quickNewIng, setQuickNewIng] = useState('')
+  const [quickDateTime, setQuickDateTime] = useState(() => toLocalISO(new Date()))
   const [aiLoading, setAiLoading] = useState(false)
   const [aiError, setAiError] = useState(null)
   const [aiResult, setAiResult] = useState(null)
@@ -92,6 +97,37 @@ export default function InvoerPage() {
   function showToast(message) {
     setToast(message)
     setTimeout(() => setToast(null), 2000)
+  }
+
+  function handleQuickAdd() {
+    const trimmed = quickNewIng.trim().toLowerCase()
+    if (!trimmed || quickIngredients.includes(trimmed)) return
+    setQuickIngredients([...quickIngredients, trimmed])
+    setQuickNewIng('')
+  }
+
+  function handleQuickCancel() {
+    setQuickEntry(false)
+    setQuickName('')
+    setQuickIngredients([])
+    setQuickNewIng('')
+    setQuickDateTime(toLocalISO(new Date()))
+  }
+
+  async function handleQuickSave() {
+    if (quickIngredients.length === 0) return
+    const ts = new Date(quickDateTime)
+    await db.entries.add({
+      type: 'maaltijd',
+      timestamp: ts,
+      description: quickIngredients.join(', '),
+      mealType,
+      severity: null,
+      note: quickName.trim() || 'Maaltijd',
+    })
+    handleQuickCancel()
+    setSavedTimestamp(ts)
+    setSymptomPrompt(true)
   }
 
   function handleSelectMeal(meal) {
@@ -369,6 +405,87 @@ export default function InvoerPage() {
     )
   }
 
+  // Quick entry screen
+  if (quickEntry) {
+    return (
+      <div className="fixed inset-0 z-40" onClick={handleQuickCancel}>
+        <div className="fixed inset-0 bg-black/10" />
+        <div className="relative pt-6 px-4" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 animate-scale-in max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-semibold text-muted uppercase tracking-wider">Snel invoeren</p>
+              <button onClick={handleQuickCancel} className="text-muted hover:text-[#1a1a1a] transition-colors">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Name */}
+            <input
+              type="text"
+              value={quickName}
+              onChange={e => setQuickName(e.target.value)}
+              placeholder="Naam (bijv. Broodje kaas)"
+              className="w-full px-4 py-3 bg-surface border border-gray-200 rounded-xl text-sm font-semibold text-[#1a1a1a] mb-3 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              autoFocus
+            />
+
+            {/* Ingredients */}
+            {quickIngredients.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {quickIngredients.map(ing => (
+                  <span key={ing} className="inline-flex items-center gap-1 bg-primary-subtle text-primary px-2.5 py-1 rounded-full text-xs font-medium capitalize">
+                    {ing}
+                    <button onClick={() => setQuickIngredients(quickIngredients.filter(i => i !== ing))} className="text-primary-dark">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={quickNewIng}
+                onChange={e => setQuickNewIng(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleQuickAdd() } }}
+                placeholder="Ingredient toevoegen..."
+                className="flex-1 px-3 py-2.5 bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              />
+              <button
+                onClick={handleQuickAdd}
+                disabled={!quickNewIng.trim()}
+                className="px-4 py-2.5 bg-primary-subtle text-primary rounded-xl text-sm font-semibold disabled:opacity-30 active:scale-95 transition-all"
+              >
+                +
+              </button>
+            </div>
+
+            {/* Date/time */}
+            <input
+              type="datetime-local"
+              value={quickDateTime}
+              onChange={e => setQuickDateTime(e.target.value)}
+              className="w-full px-4 py-3 mb-4 bg-surface border border-gray-200 rounded-xl text-sm text-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            />
+
+            <button
+              onClick={handleQuickSave}
+              disabled={quickIngredients.length === 0}
+              className="w-full py-3.5 bg-primary text-white rounded-full font-semibold text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+            >
+              Opslaan ({quickIngredients.length} ingrediënten)
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Ingredient selection screen
   if (selectedMeal) {
     return (
@@ -521,6 +638,17 @@ export default function InvoerPage() {
             Maaltijd fotograferen
           </button>
           <input ref={fileInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoCapture} className="hidden" />
+
+          {/* Quick entry button */}
+          <button
+            onClick={() => { setQuickEntry(true); setQuickDateTime(toLocalISO(new Date())) }}
+            className="w-full flex items-center justify-center gap-2 py-3.5 mb-5 bg-white border border-gray-200 text-[#1a1a1a] rounded-full font-semibold text-[14px] active:scale-[0.97] transition-all"
+          >
+            <svg className="w-4 h-4 text-muted" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+            </svg>
+            Snel invoeren
+          </button>
 
           {/* Meal list */}
           <div className={`min-h-[30vh] overflow-hidden touch-pan-y ${slideClass}`}>
