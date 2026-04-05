@@ -60,9 +60,9 @@ export default function InstellingenPage() {
   return (
     <div className="space-y-3">
       {/* AI section */}
-      <p className="text-[10px] font-bold text-sand-300 uppercase tracking-widest px-1 mb-2">AI Fotoherkenning</p>
+      <p className="text-[10px] font-bold text-muted uppercase tracking-widest px-1 mb-2">AI Fotoherkenning</p>
 
-      <div className="bg-white border border-sand-200/60 rounded-2xl shadow-sm px-4 py-4">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-4 py-4">
         <div className="flex items-center gap-2">
           <input
             type="password"
@@ -71,10 +71,10 @@ export default function InstellingenPage() {
             onBlur={() => { saveApiKey(apiKey.trim()); setKeySaved(!!apiKey.trim()); if (apiKey.trim()) showToast('API-sleutel opgeslagen!') }}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.target.blur() } }}
             placeholder="Gemini API-sleutel"
-            className="flex-1 px-3 py-2.5 bg-sand-50 border border-sand-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
+            className="flex-1 px-3 py-2.5 bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
           />
           {keySaved && (
-            <svg className="w-5 h-5 text-green-accent flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <svg className="w-5 h-5 text-primary flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           )}
@@ -83,7 +83,7 @@ export default function InstellingenPage() {
           href="https://aistudio.google.com/apikey"
           target="_blank"
           rel="noopener noreferrer"
-          className="block text-[11px] text-green-light mt-2 px-1"
+          className="block text-[11px] text-primary-dark mt-2 px-1"
         >
           Gratis sleutel ophalen op aistudio.google.com →
         </a>
@@ -92,7 +92,7 @@ export default function InstellingenPage() {
       <div className="h-4" />
 
       {/* Data section */}
-      <p className="text-[10px] font-bold text-sand-300 uppercase tracking-widest px-1 mb-2">Data</p>
+      <p className="text-[10px] font-bold text-muted uppercase tracking-widest px-1 mb-2">Data</p>
 
       <SettingsButton onClick={handleExport} icon={ExportIcon}>
         Exporteer data
@@ -111,7 +111,7 @@ export default function InstellingenPage() {
 
       <div className="h-4" />
 
-      <p className="text-[10px] font-bold text-sand-300 uppercase tracking-widest px-1 mb-2">Geavanceerd</p>
+      <p className="text-[10px] font-bold text-muted uppercase tracking-widest px-1 mb-2">Geavanceerd</p>
 
       <button
         onClick={handleClear}
@@ -122,15 +122,15 @@ export default function InstellingenPage() {
       </button>
 
       {/* Info */}
-      <div className="mt-12 text-center text-[10px] text-sand-300 space-y-1 leading-relaxed pb-4">
-        <p className="font-bold text-[#1a1a2e] text-[11px]">Voedingsdagboek</p>
+      <div className="mt-12 text-center text-[10px] text-muted space-y-1 leading-relaxed pb-4">
+        <p className="font-bold text-[#1a1a1a] text-[11px]">Voedingsdagboek</p>
         <p>Alle data wordt lokaal opgeslagen</p>
         <p>Er wordt niets naar een server gestuurd</p>
       </div>
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#1a1a2e] text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#1a1a1a] text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
           {toast}
         </div>
       )}
@@ -142,7 +142,7 @@ function SettingsButton({ children, onClick, icon: Icon }) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-4 py-4 bg-white border border-sand-200/60 rounded-2xl text-sm font-medium text-[#1a1a2e] shadow-sm hover:bg-sand-50 active:scale-[0.98] transition-all duration-150"
+      className="w-full flex items-center gap-3 px-4 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-medium text-[#1a1a1a] shadow-sm hover:bg-surface active:scale-[0.98] transition-all duration-150"
     >
       {Icon && <Icon />}
       {children}
@@ -152,7 +152,7 @@ function SettingsButton({ children, onClick, icon: Icon }) {
 
 function ExportIcon() {
   return (
-    <svg className="w-4.5 h-4.5 text-sand-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <svg className="w-4.5 h-4.5 text-muted" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
     </svg>
   )
@@ -160,7 +160,7 @@ function ExportIcon() {
 
 function ImportIcon() {
   return (
-    <svg className="w-4.5 h-4.5 text-sand-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <svg className="w-4.5 h-4.5 text-muted" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
     </svg>
   )

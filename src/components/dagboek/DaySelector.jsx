@@ -10,10 +10,10 @@ export default function DaySelector({ date, onChange }) {
   const isToday = isSameDay(date, new Date())
 
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center justify-between mb-5">
       <button
         onClick={() => shift(-1)}
-        className="w-10 h-10 flex items-center justify-center text-sand-300 hover:text-green-accent rounded-xl transition-colors"
+        className="w-10 h-10 flex items-center justify-center text-muted hover:text-primary rounded-xl transition-colors"
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -22,7 +22,7 @@ export default function DaySelector({ date, onChange }) {
 
       <button
         onClick={() => onChange(new Date())}
-        className={`text-[15px] font-bold capitalize tracking-tight ${isToday ? 'text-green-accent' : 'text-[#1a1a2e]'}`}
+        className={`text-[15px] font-semibold capitalize ${isToday ? 'text-primary' : 'text-[#1a1a1a]'}`}
       >
         {isToday ? 'Vandaag' : formatDate(date)}
       </button>
@@ -30,7 +30,7 @@ export default function DaySelector({ date, onChange }) {
       <button
         onClick={() => shift(1)}
         disabled={isToday}
-        className="w-10 h-10 flex items-center justify-center text-sand-300 hover:text-green-accent rounded-xl transition-colors disabled:opacity-20"
+        className="w-10 h-10 flex items-center justify-center text-muted hover:text-primary rounded-xl transition-colors disabled:opacity-20"
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

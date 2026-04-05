@@ -38,7 +38,7 @@ export default function AnalysePage() {
   if (!entries || !analytics) {
     return (
       <div className="flex justify-center py-12">
-        <div className="w-5 h-5 border-2 border-green-accent border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -46,15 +46,15 @@ export default function AnalysePage() {
   return (
     <div className="space-y-5">
       {/* Range selector */}
-      <div className="flex bg-sand-100 rounded-xl p-1">
+      <div className="flex bg-surface rounded-xl p-1">
         {RANGES.map(({ value, label }) => (
           <button
             key={value}
             onClick={() => setRange(value)}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
               range === value
-                ? 'bg-white text-green-accent shadow-sm'
-                : 'text-sand-300'
+                ? 'bg-white text-primary shadow-sm'
+                : 'text-muted'
             }`}
           >
             {label}
@@ -69,15 +69,15 @@ export default function AnalysePage() {
       {insights.length > 0 && <InsightCards insights={insights} />}
 
       {/* Severity over time */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-4">Klachten over tijd</h2>
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Klachten over tijd</h2>
         <SeverityChart data={analytics.dailySeverity} movingAverage={analytics.movingAverage} />
       </div>
 
       {/* Ingredient analysis */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
-        <p className="text-[10px] text-sand-300/70 mb-4">
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
+        <p className="text-[10px] text-muted/70 mb-4">
           {analytics.baselineRate > 0
             ? `Baseline: ${Math.round(analytics.baselineRate * 100)}% van maaltijden gevolgd door klachten`
             : 'Geen baseline beschikbaar'}
@@ -87,28 +87,28 @@ export default function AnalysePage() {
 
       {/* Patterns section */}
       <div>
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-3 px-1">Patronen</h2>
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Patronen</h2>
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-sand-200/60">
-            <p className="text-[10px] font-semibold text-sand-300 uppercase tracking-wider mb-3">Per uur</p>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per uur</p>
             <HourlyChart data={analytics.hourlyPattern} />
           </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-sand-200/60">
-            <p className="text-[10px] font-semibold text-sand-300 uppercase tracking-wider mb-3">Per dag</p>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per dag</p>
             <WeekdayChart data={analytics.weekdayPattern} />
           </div>
         </div>
       </div>
 
       {/* Meal type breakdown */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60">
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-4">Per maaltijdtype</h2>
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Per maaltijdtype</h2>
         <MealTypeCard data={analytics.mealTypePattern} />
       </div>
 
       {/* Streaks */}
       <div>
-        <h2 className="text-xs font-semibold text-sand-300 uppercase tracking-wider mb-3 px-1">Reeksen</h2>
+        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Reeksen</h2>
         <StreakCard streaks={analytics.streaks} />
       </div>
     </div>

@@ -16,7 +16,7 @@ export default function WeekdayChart({ data }) {
   if (!hasData) {
     return (
       <div className="text-center py-6">
-        <p className="text-sand-300 text-xs">Geen klachten geregistreerd</p>
+        <p className="text-muted text-xs">Geen klachten geregistreerd</p>
       </div>
     )
   }
@@ -37,7 +37,7 @@ export default function WeekdayChart({ data }) {
     maintainAspectRatio: false,
     plugins: {
       tooltip: {
-        backgroundColor: '#1a1a2e',
+        backgroundColor: '#1a1a1a',
         titleFont: { size: 10 },
         bodyFont: { size: 10 },
         cornerRadius: 8,
@@ -54,12 +54,12 @@ export default function WeekdayChart({ data }) {
       x: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 1, font: { size: 9 }, color: '#d4cec4' },
+        ticks: { stepSize: 1, font: { size: 9 }, color: '#d0d0d0' },
         grid: { color: 'rgba(0,0,0,0.03)' },
         border: { display: false },
       },
       y: {
-        ticks: { font: { size: 10, weight: 500 }, color: '#1a1a2e' },
+        ticks: { font: { size: 10, weight: 500 }, color: '#1a1a1a' },
         grid: { display: false },
         border: { display: false },
       },

@@ -1,7 +1,7 @@
 const RISK_STYLES = {
   hoog: { bg: 'bg-red-50/60', text: 'text-red-500', label: 'Hoog risico', barColor: '#ef4444' },
   midden: { bg: 'bg-amber-50/60', text: 'text-amber-500', label: 'Mogelijk', barColor: '#f59e0b' },
-  laag: { bg: 'bg-green-subtle', text: 'text-green-accent', label: 'Veilig', barColor: '#2d6a4f' },
+  laag: { bg: 'bg-primary-subtle', text: 'text-primary', label: 'Veilig', barColor: '#65B741' },
 }
 
 const CONFIDENCE_DOTS = {
@@ -14,7 +14,7 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
   if (!ingredients || ingredients.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sand-300 text-xs">
+        <p className="text-muted text-xs">
           Registreer minstens 2x hetzelfde ingredient + klachten
         </p>
       </div>
@@ -43,14 +43,14 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
 
             <div className="flex-1 min-w-0 relative">
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-[#1a1a2e] capitalize truncate">{item.name}</p>
+                <p className="text-sm font-semibold text-[#1a1a1a] capitalize truncate">{item.name}</p>
                 {/* Lift indicator */}
-                <span className={`text-[10px] font-bold ${liftUp ? 'text-red-400' : 'text-green-accent'}`}>
+                <span className={`text-[10px] font-bold ${liftUp ? 'text-red-400' : 'text-primary'}`}>
                   {liftUp ? '↑' : '↓'}{item.lift.toFixed(1)}x
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-0.5">
-                <p className="text-[10px] text-[#1a1a2e]/50 font-medium">
+                <p className="text-[10px] text-[#1a1a1a]/50 font-medium">
                   {item.timesEaten}x gegeten &middot; {pct}% klachten
                 </p>
                 {/* Confidence dots */}
@@ -58,7 +58,7 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
                   {dots.map((filled, i) => (
                     <div
                       key={i}
-                      className={`w-1 h-1 rounded-full ${filled ? 'bg-[#1a1a2e]/30' : 'bg-[#1a1a2e]/10'}`}
+                      className={`w-1 h-1 rounded-full ${filled ? 'bg-[#1a1a1a]/30' : 'bg-[#1a1a1a]/10'}`}
                     />
                   ))}
                 </div>

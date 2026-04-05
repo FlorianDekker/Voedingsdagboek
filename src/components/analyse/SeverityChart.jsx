@@ -7,7 +7,7 @@ export default function SeverityChart({ data, movingAverage }) {
   if (filtered.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sand-300 text-xs">Nog geen klachten geregistreerd</p>
+        <p className="text-muted text-xs">Nog geen klachten geregistreerd</p>
       </div>
     )
   }
@@ -43,13 +43,13 @@ export default function SeverityChart({ data, movingAverage }) {
     datasets.push({
       label: '7-daags gemiddelde',
       data: movingAverage.map(d => d.avg),
-      borderColor: '#2d6a4f',
+      borderColor: '#65B741',
       borderWidth: 2,
       borderDash: [6, 3],
       tension: 0.4,
       pointRadius: 0,
       pointHoverRadius: 3,
-      pointBackgroundColor: '#2d6a4f',
+      pointBackgroundColor: '#65B741',
       fill: false,
       spanGaps: true,
     })
@@ -66,7 +66,7 @@ export default function SeverityChart({ data, movingAverage }) {
     },
     plugins: {
       tooltip: {
-        backgroundColor: '#1a1a2e',
+        backgroundColor: '#1a1a1a',
         titleFont: { size: 11 },
         bodyFont: { size: 11 },
         cornerRadius: 10,
@@ -85,14 +85,14 @@ export default function SeverityChart({ data, movingAverage }) {
       y: {
         min: 0,
         max: 5,
-        ticks: { stepSize: 1, font: { size: 10 }, color: '#d4cec4' },
+        ticks: { stepSize: 1, font: { size: 10 }, color: '#d0d0d0' },
         grid: { color: 'rgba(0,0,0,0.03)' },
         border: { display: false },
       },
       x: {
         ticks: {
           font: { size: 9 },
-          color: '#d4cec4',
+          color: '#d0d0d0',
           maxRotation: 45,
           maxTicksLimit: 8,
         },
