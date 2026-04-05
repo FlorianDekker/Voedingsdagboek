@@ -109,5 +109,9 @@ button:active, a:active {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+canvas {
+  touch-action: pan-y !important;
+}
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -69,7 +69,7 @@ export default function HourlyChart({ data }) {
   }
 
   return (
-    <div style={{ height: 140 }}>
+    <div style={{ height: 140, touchAction: 'pan-y' }}>
       <Bar data={chartData} options={options} />
     </div>
   )

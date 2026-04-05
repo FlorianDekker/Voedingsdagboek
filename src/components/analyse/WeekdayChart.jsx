@@ -67,7 +67,7 @@ export default function WeekdayChart({ data }) {
   }
 
   return (
-    <div style={{ height: 180 }}>
+    <div style={{ height: 180, touchAction: 'pan-y' }}>
       <Bar data={chartData} options={options} />
     </div>
   )

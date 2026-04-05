@@ -103,7 +103,7 @@ export default function SeverityChart({ data, movingAverage }) {
   }
 
   return (
-    <div style={{ height: 200 }}>
+    <div style={{ height: 200, touchAction: 'pan-y' }}>
       <Line data={chartData} options={options} />
     </div>
   )
