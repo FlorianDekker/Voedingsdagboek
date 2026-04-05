@@ -13,6 +13,58 @@ const MEAL_ICONS = {
   tussendoor: '🍎',
 }
 
+// Maps ingredient keywords to emoji
+const FOOD_EMOJI = [
+  // Fruit
+  ['sinaasappel', '🍊'], ['mandarijn', '🍊'], ['appel', '🍎'], ['banaan', '🍌'],
+  ['aardbei', '🍓'], ['druif', '🍇'], ['druiven', '🍇'], ['citroen', '🍋'],
+  ['watermeloen', '🍉'], ['meloen', '🍈'], ['perzik', '🍑'], ['kers', '🍒'],
+  ['kersen', '🍒'], ['ananas', '🍍'], ['mango', '🥭'], ['kiwi', '🥝'],
+  ['peer', '🍐'], ['bosbes', '🫐'], ['blauwe bes', '🫐'], ['kokosnoot', '🥥'],
+  ['kokos', '🥥'], ['avocado', '🥑'], ['fruit', '🍎'],
+  // Groenten
+  ['broccoli', '🥦'], ['wortel', '🥕'], ['mais', '🌽'], ['tomaat', '🍅'],
+  ['paprika', '🫑'], ['ui', '🧅'], ['knoflook', '🧄'], ['aardappel', '🥔'],
+  ['friet', '🍟'], ['patat', '🍟'], ['sla', '🥬'], ['komkommer', '🥒'],
+  ['aubergine', '🍆'], ['champignon', '🍄'], ['paddenstoel', '🍄'],
+  ['spinazie', '🥬'], ['olijf', '🫒'], ['olijven', '🫒'],
+  // Brood & granen
+  ['brood', '🍞'], ['toast', '🍞'], ['boterham', '🍞'], ['croissant', '🥐'],
+  ['bagel', '🥯'], ['pannenkoek', '🥞'], ['wafel', '🧇'], ['rijst', '🍚'],
+  ['pasta', '🍝'], ['spaghetti', '🍝'], ['noodle', '🍜'], ['noedel', '🍜'],
+  ['havermout', '🥣'], ['ontbijtgranen', '🥣'], ['muesli', '🥣'],
+  ['tortilla', '🌯'], ['wrap', '🌯'], ['taco', '🌮'], ['pizza', '🍕'],
+  // Vlees & vis
+  ['kip', '🍗'], ['chicken', '🍗'], ['vlees', '🥩'], ['steak', '🥩'],
+  ['biefstuk', '🥩'], ['gehakt', '🥩'], ['hamburger', '🍔'], ['burger', '🍔'],
+  ['worst', '🌭'], ['hotdog', '🌭'], ['spek', '🥓'], ['bacon', '🥓'],
+  ['vis', '🐟'], ['zalm', '🐟'], ['tonijn', '🐟'], ['garnaal', '🦐'],
+  ['garnalen', '🦐'], ['kreeft', '🦞'], ['sushi', '🍣'],
+  // Zuivel & eieren
+  ['ei', '🍳'], ['eieren', '🍳'], ['kaas', '🧀'], ['melk', '🥛'],
+  ['yoghurt', '🥛'], ['boter', '🧈'], ['ijs', '🍦'],
+  // Drinken
+  ['koffie', '☕'], ['thee', '🍵'], ['bier', '🍺'], ['wijn', '🍷'],
+  ['sap', '🧃'], ['water', '💧'], ['smoothie', '🥤'], ['cola', '🥤'],
+  ['frisdrank', '🥤'], ['cocktail', '🍹'],
+  // Snacks & zoet
+  ['chocola', '🍫'], ['chocolade', '🍫'], ['koek', '🍪'], ['cookie', '🍪'],
+  ['cake', '🍰'], ['taart', '🎂'], ['donut', '🍩'], ['snoep', '🍬'],
+  ['chips', '🍿'], ['noot', '🥜'], ['noten', '🥜'], ['pinda', '🥜'],
+  ['honing', '🍯'], ['popcorn', '🍿'],
+  // Overig
+  ['soep', '🍲'], ['stoofpot', '🍲'], ['curry', '🍛'], ['salade', '🥗'],
+  ['sandwich', '🥪'], ['tosti', '🥪'], ['hot dog', '🌭'],
+]
+
+function getFoodEmoji(ingredients, mealType) {
+  const text = ingredients.join(' ').toLowerCase()
+  for (const [keyword, emoji] of FOOD_EMOJI) {
+    if (text.includes(keyword)) return emoji
+  }
+  return MEAL_ICONS[mealType] || '🍽️'
+}
+
 export default function DagboekPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [animDir, setAnimDir] = useState(null)
@@ -138,7 +190,7 @@ function MealRow({ entry }) {
       <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 mr-1">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm">{MEAL_ICONS[entry.mealType] || '🍽️'}</span>
+            <span className="text-sm">{getFoodEmoji(ingredients, entry.mealType)}</span>
             <p className="text-[13px] font-semibold text-[#1a1a1a]">{entry.note || 'Maaltijd'}</p>
           </div>
           <div className="flex items-center gap-1.5">
