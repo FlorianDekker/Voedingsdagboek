@@ -10,26 +10,23 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 backdrop-blur-2xl bg-white/80 border-t border-gray-100/60 z-50">
-      <div className="flex justify-around items-center h-20 pt-1.5 pb-5 max-w-md mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white z-50" style={{ boxShadow: '0 -1px 0 rgba(0,0,0,0.04), 0 -4px 16px rgba(0,0,0,0.04)' }}>
+      <div className="flex justify-around items-center h-[72px] pt-2 pb-5 max-w-lg mx-auto">
         {tabs.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             end={to === '/'}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-0.5 py-1.5 px-2 text-[9px] font-semibold transition-all duration-200 relative ${
-                isActive ? 'text-emerald-600' : 'text-gray-300 hover:text-gray-400'
+              `flex flex-col items-center justify-center gap-0.5 flex-1 text-[10px] font-medium transition-all duration-200 ${
+                isActive ? 'text-green-accent' : 'text-sand-300'
               }`
             }
           >
             {({ isActive }) => (
               <>
-                {isActive && (
-                  <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-6 h-[3px] bg-emerald-500 rounded-full" />
-                )}
-                <Icon className={`w-[22px] h-[22px] transition-all duration-200 ${isActive ? 'scale-105' : ''}`} />
-                <span className="mt-0.5">{label}</span>
+                <Icon className="w-6 h-6" />
+                <span className={isActive ? 'font-semibold' : ''}>{label}</span>
               </>
             )}
           </NavLink>

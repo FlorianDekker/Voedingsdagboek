@@ -223,10 +223,10 @@ export default function InvoerPage() {
   if (aiLoading) {
     return (
       <div className="animate-scale-in">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
-          <div className="w-12 h-12 mx-auto mb-4 border-3 border-emerald-200 border-t-emerald-500 rounded-full animate-spin" />
-          <p className="text-base font-semibold text-gray-800">Foto analyseren...</p>
-          <p className="text-xs text-gray-400 mt-1">Even geduld, AI herkent ingrediënten</p>
+        <div className="bg-white rounded-2xl p-8 shadow-sm border border-sand-200/60 text-center">
+          <div className="w-12 h-12 mx-auto mb-4 border-3 border-green-dim border-t-green-accent rounded-full animate-spin" />
+          <p className="text-base font-semibold text-[#1a1a2e]">Foto analyseren...</p>
+          <p className="text-xs text-sand-300 mt-1">Even geduld, AI herkent ingrediënten</p>
         </div>
       </div>
     )
@@ -236,23 +236,23 @@ export default function InvoerPage() {
   if (aiError) {
     return (
       <div className="animate-scale-in">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-sand-200/60 text-center">
           <div className="w-12 h-12 mx-auto mb-4 bg-red-50 rounded-full flex items-center justify-center">
             <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-gray-800 mb-1">{aiError}</p>
+          <p className="text-sm font-semibold text-[#1a1a2e] mb-1">{aiError}</p>
           <div className="flex gap-3 mt-5">
             <button
               onClick={handleAiCancel}
-              className="flex-1 py-3 bg-gray-100 text-gray-500 rounded-2xl text-sm font-semibold active:scale-[0.98] transition-all"
+              className="flex-1 py-3 bg-sand-100 text-sand-300 rounded-2xl text-sm font-semibold active:scale-[0.98] transition-all"
             >
               Annuleren
             </button>
             <button
               onClick={() => { setAiError(null); fileInputRef.current?.click() }}
-              className="flex-1 py-3 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all"
+              className="flex-1 py-3 bg-green-accent text-white rounded-2xl text-sm font-semibold shadow-lg shadow-green-accent/20 active:scale-[0.98] transition-all"
             >
               Opnieuw
             </button>
@@ -269,10 +269,10 @@ export default function InvoerPage() {
       <div className="fixed inset-0 z-40" onClick={handleAiCancel}>
         <div className="fixed inset-0 bg-black/10" />
         <div className="relative pt-6 px-4" onClick={e => e.stopPropagation()}>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 animate-scale-in max-h-[80vh] overflow-y-auto">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60 animate-scale-in max-h-[80vh] overflow-y-auto">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-gray-400">AI-herkenning</p>
-            <button onClick={handleAiCancel} className="text-gray-300 hover:text-gray-500 transition-colors">
+            <p className="text-xs text-sand-300">AI-herkenning</p>
+            <button onClick={handleAiCancel} className="text-sand-300 hover:text-[#1a1a2e] transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -285,7 +285,7 @@ export default function InvoerPage() {
             value={aiName}
             onChange={e => setAiName(e.target.value)}
             placeholder="Naam van de maaltijd"
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200/80 rounded-xl text-sm font-semibold text-gray-800 mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+            className="w-full px-4 py-3 bg-sand-50 border border-sand-200 rounded-xl text-sm font-semibold text-[#1a1a2e] mb-4 focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
           />
 
           {/* Ingredients */}
@@ -298,12 +298,12 @@ export default function InvoerPage() {
                   onClick={() => handleAiToggle(ing)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     checked
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : 'bg-gray-50 text-gray-300 border border-gray-100 line-through'
+                      ? 'bg-green-subtle text-green-accent border border-green-dim'
+                      : 'bg-sand-50 text-sand-300 border border-sand-200 line-through'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-all ${
-                    checked ? 'bg-emerald-500' : 'bg-gray-200'
+                    checked ? 'bg-green-accent' : 'bg-sand-200'
                   }`}>
                     {checked && (
                       <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
@@ -325,12 +325,12 @@ export default function InvoerPage() {
               onChange={e => setNewIngredient(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAiAddIngredient() } }}
               placeholder="Ingredient toevoegen..."
-              className="flex-1 px-3 py-2.5 bg-gray-50 border border-gray-200/80 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+              className="flex-1 px-3 py-2.5 bg-sand-50 border border-sand-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
             />
             <button
               onClick={handleAiAddIngredient}
               disabled={!newIngredient.trim()}
-              className="px-4 py-2.5 bg-emerald-50 text-emerald-600 rounded-xl text-sm font-semibold disabled:opacity-30 active:scale-95 transition-all"
+              className="px-4 py-2.5 bg-green-subtle text-green-accent rounded-xl text-sm font-semibold disabled:opacity-30 active:scale-95 transition-all"
             >
               +
             </button>
@@ -339,11 +339,11 @@ export default function InvoerPage() {
           {/* Save as template toggle */}
           <button
             onClick={() => setSaveAsTemplate(prev => !prev)}
-            className="w-full flex items-center justify-between px-4 py-3 mb-4 bg-gray-50 rounded-xl"
+            className="w-full flex items-center justify-between px-4 py-3 mb-4 bg-sand-50 rounded-xl"
           >
-            <span className="text-sm text-gray-600">Ook als maaltijd bewaren</span>
+            <span className="text-sm text-[#1a1a2e]">Ook als maaltijd bewaren</span>
             <div className={`w-10 h-6 rounded-full transition-all duration-200 flex items-center ${
-              saveAsTemplate ? 'bg-emerald-500 justify-end' : 'bg-gray-200 justify-start'
+              saveAsTemplate ? 'bg-green-accent justify-end' : 'bg-sand-200 justify-start'
             }`}>
               <div className="w-5 h-5 bg-white rounded-full shadow-sm mx-0.5" />
             </div>
@@ -353,13 +353,13 @@ export default function InvoerPage() {
             type="datetime-local"
             value={entryDateTime}
             onChange={e => setEntryDateTime(e.target.value)}
-            className="w-full px-4 py-3 mb-4 bg-gray-50 border border-gray-200/80 rounded-xl text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+            className="w-full px-4 py-3 mb-4 bg-sand-50 border border-sand-200 rounded-xl text-sm text-[#1a1a2e] focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
           />
 
           <button
             onClick={handleAiConfirm}
             disabled={aiChecked.length === 0}
-            className="w-full py-3.5 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+            className="w-full py-3.5 bg-green-accent text-white rounded-2xl font-semibold text-sm shadow-lg shadow-green-accent/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
           >
             Opslaan ({aiChecked.length} ingrediënten)
           </button>
@@ -375,13 +375,13 @@ export default function InvoerPage() {
       <div className="fixed inset-0 z-40" onClick={handleCancelMeal}>
         <div className="fixed inset-0 bg-black/10" />
         <div className="relative pt-6 px-4" onClick={e => e.stopPropagation()}>
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 animate-scale-in">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-sand-200/60 animate-scale-in">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-base font-semibold text-gray-800">{selectedMeal.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">Vink ingrediënten aan of uit</p>
+              <p className="text-base font-semibold text-[#1a1a2e]">{selectedMeal.name}</p>
+              <p className="text-xs text-sand-300 mt-0.5">Vink ingrediënten aan of uit</p>
             </div>
-            <button onClick={handleCancelMeal} className="text-gray-300 hover:text-gray-500 transition-colors">
+            <button onClick={handleCancelMeal} className="text-sand-300 hover:text-[#1a1a2e] transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -397,12 +397,12 @@ export default function InvoerPage() {
                   onClick={() => toggleIngredient(ing)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     checked
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                      : 'bg-gray-50 text-gray-300 border border-gray-100 line-through'
+                      ? 'bg-green-subtle text-green-accent border border-green-dim'
+                      : 'bg-sand-50 text-sand-300 border border-sand-200 line-through'
                   }`}
                 >
                   <div className={`w-5 h-5 rounded-md flex items-center justify-center flex-shrink-0 transition-all ${
-                    checked ? 'bg-emerald-500' : 'bg-gray-200'
+                    checked ? 'bg-green-accent' : 'bg-sand-200'
                   }`}>
                     {checked && (
                       <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
@@ -420,13 +420,13 @@ export default function InvoerPage() {
             type="datetime-local"
             value={entryDateTime}
             onChange={e => setEntryDateTime(e.target.value)}
-            className="w-full px-4 py-3 mb-4 bg-gray-50 border border-gray-200/80 rounded-xl text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+            className="w-full px-4 py-3 mb-4 bg-sand-50 border border-sand-200 rounded-xl text-sm text-[#1a1a2e] focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
           />
 
           <button
             onClick={handleConfirmMeal}
             disabled={checkedIngredients.length === 0}
-            className="w-full py-3.5 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl font-semibold text-sm shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+            className="w-full py-3.5 bg-green-accent text-white rounded-2xl font-semibold text-sm shadow-lg shadow-green-accent/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
           >
             Opslaan ({checkedIngredients.length}/{selectedMeal.ingredients.length})
           </button>
@@ -440,9 +440,9 @@ export default function InvoerPage() {
   if (symptomPrompt) {
     return (
       <div className="animate-scale-in">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center">
-          <p className="text-base font-semibold text-gray-800 mb-1">Hoe voelt je maag?</p>
-          <p className="text-xs text-gray-400 mb-5">Tik op een niveau of sla over</p>
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-sand-200/60 text-center">
+          <p className="text-base font-semibold text-[#1a1a2e] mb-1">Hoe voelt je maag?</p>
+          <p className="text-xs text-sand-300 mb-5">Tik op een niveau of sla over</p>
 
           <div className="flex justify-center gap-3 mb-6">
             {[1, 2, 3, 4, 5].map((level) => (
@@ -459,7 +459,7 @@ export default function InvoerPage() {
 
           <button
             onClick={handleSkip}
-            className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-sm text-sand-300 hover:text-[#1a1a2e] transition-colors"
           >
             Overslaan
           </button>
@@ -471,11 +471,11 @@ export default function InvoerPage() {
   return (
     <div ref={pageRef}>
       {/* Mode toggle */}
-      <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
+      <div className="flex bg-sand-100 rounded-2xl p-1 mb-5">
         <button
           onClick={() => setMode('maaltijd')}
           className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            mode === 'maaltijd' ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400'
+            mode === 'maaltijd' ? 'bg-white text-green-accent shadow-sm' : 'text-sand-300'
           }`}
         >
           Eten
@@ -483,7 +483,7 @@ export default function InvoerPage() {
         <button
           onClick={() => setMode('klacht')}
           className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-            mode === 'klacht' ? 'bg-white text-red-500 shadow-sm' : 'text-gray-400'
+            mode === 'klacht' ? 'bg-white text-red-500 shadow-sm' : 'text-sand-300'
           }`}
         >
           Klacht
@@ -493,15 +493,15 @@ export default function InvoerPage() {
       {mode === 'maaltijd' ? (
         <div className="animate-fade-in">
           {/* Meal type filter */}
-          <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
+          <div className="flex bg-sand-100 rounded-2xl p-1 mb-5">
             {MEAL_TYPES.map(({ value, label }, i) => (
               <button
                 key={value}
                 onClick={() => goTo(i)}
                 className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   mealType === value
-                    ? 'bg-white text-emerald-600 shadow-sm'
-                    : 'text-gray-400'
+                    ? 'bg-white text-green-accent shadow-sm'
+                    : 'text-sand-300'
                 }`}
               >
                 {label}
@@ -512,7 +512,7 @@ export default function InvoerPage() {
           {/* Camera button */}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2.5 py-4 mb-5 bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-emerald-500/25 active:scale-[0.97] transition-all"
+            className="w-full flex items-center justify-center gap-2.5 py-4 mb-5 bg-green-accent text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-green-accent/20 active:scale-[0.97] transition-all"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -526,12 +526,12 @@ export default function InvoerPage() {
           <div className={`min-h-[30vh] overflow-hidden touch-pan-y ${slideClass}`}>
           {meals.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-300 text-sm mb-4">
+              <p className="text-sand-300 text-sm mb-4">
                 Nog geen maaltijden voor {MEAL_TYPES.find(m => m.value === mealType)?.label.toLowerCase()}
               </p>
               <Link
                 to="/maaltijden"
-                className="inline-block bg-gradient-to-b from-emerald-500 to-emerald-600 text-white px-6 py-2.5 rounded-2xl text-sm font-semibold shadow-lg shadow-emerald-500/25 active:scale-[0.97] transition-all"
+                className="inline-block bg-green-accent text-white px-6 py-2.5 rounded-2xl text-sm font-semibold shadow-lg shadow-green-accent/20 active:scale-[0.97] transition-all"
               >
                 + Maaltijd aanmaken
               </Link>
@@ -542,16 +542,16 @@ export default function InvoerPage() {
                 <button
                   key={meal.id}
                   onClick={() => handleSelectMeal(meal)}
-                  className="w-full bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/40 px-4 py-4 text-left active:scale-[0.98] transition-all duration-150 hover:shadow-md"
+                  className="w-full bg-white rounded-2xl shadow-sm border border-sand-200/60 px-4 py-4 text-left active:scale-[0.98] transition-all duration-150 hover:shadow-md"
                 >
-                  <p className="text-[14px] font-semibold text-gray-800">{meal.name}</p>
-                  <p className="text-[11px] text-gray-400 mt-0.5">{meal.ingredients.length} ingrediënten</p>
+                  <p className="text-[14px] font-semibold text-[#1a1a2e]">{meal.name}</p>
+                  <p className="text-[11px] text-sand-300 mt-0.5">{meal.ingredients.length} ingrediënten</p>
                 </button>
               ))}
 
               <Link
                 to="/maaltijden"
-                className="block text-center text-xs text-gray-300 hover:text-gray-400 py-3 transition-colors"
+                className="block text-center text-xs text-sand-300 hover:text-green-light py-3 transition-colors"
               >
                 Maaltijden beheren
               </Link>
@@ -565,7 +565,7 @@ export default function InvoerPage() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#1a1a2e] text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
           {toast}
         </div>
       )}
@@ -595,7 +595,7 @@ function SymptomOnlyInput({ onSaved }) {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <p className="text-sm text-gray-400 text-center">Hoe voelt je maag op dit moment?</p>
+      <p className="text-sm text-sand-300 text-center">Hoe voelt je maag op dit moment?</p>
 
       <div className="flex justify-center gap-3">
         {[1, 2, 3, 4, 5].map((level) => (
@@ -628,7 +628,7 @@ function SymptomOnlyInput({ onSaved }) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Notitie (optioneel)"
-        className="w-full px-4 py-3.5 bg-white border border-gray-200/80 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-red-300/50 focus:border-red-200 transition-all"
+        className="w-full px-4 py-3.5 bg-white border border-sand-200 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-red-300/50 focus:border-red-200 transition-all"
       />
 
       <button
@@ -638,7 +638,7 @@ function SymptomOnlyInput({ onSaved }) {
         style={{
           background: severity
             ? `linear-gradient(to bottom, ${SEVERITY_COLORS[severity]}, ${SEVERITY_COLORS[severity]}dd)`
-            : '#d1d5db',
+            : '#d4cec4',
           boxShadow: severity ? `0 10px 25px -5px ${SEVERITY_COLORS[severity]}40` : undefined,
         }}
       >

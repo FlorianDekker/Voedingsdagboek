@@ -81,15 +81,15 @@ export default function MaaltijdenPage() {
   return (
     <div ref={pageRef}>
       {/* Category tabs */}
-      <div className="flex bg-gray-100 rounded-2xl p-1 mb-5">
+      <div className="flex bg-sand-100 rounded-2xl p-1 mb-5">
         {MEAL_TYPES.map(({ value, label }, i) => (
           <button
             key={value}
             onClick={() => goTo(i)}
             className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
               activeTab === value
-                ? 'bg-white text-emerald-600 shadow-sm'
-                : 'text-gray-400'
+                ? 'bg-white text-green-accent shadow-sm'
+                : 'text-sand-300'
             }`}
           >
             {label}
@@ -101,7 +101,7 @@ export default function MaaltijdenPage() {
       <div className={`min-h-[40vh] overflow-hidden touch-pan-y ${slideClass}`}>
         {meals.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-300 text-sm">Nog geen maaltijden</p>
+            <p className="text-sand-300 text-sm">Nog geen maaltijden</p>
           </div>
         ) : (
           <div className="space-y-2 animate-fade-in">
@@ -115,13 +115,13 @@ export default function MaaltijdenPage() {
       {/* Add button */}
       <button
         onClick={() => setShowForm(true)}
-        className="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-br from-emerald-500 via-emerald-500 to-teal-600 text-white rounded-full shadow-xl shadow-emerald-500/30 flex items-center justify-center text-2xl font-light active:scale-90 transition-all duration-150 z-40 hover:shadow-2xl"
+        className="fixed bottom-24 right-5 w-14 h-14 bg-green-accent text-white rounded-full shadow-xl shadow-green-accent/25 flex items-center justify-center text-2xl font-light active:scale-90 transition-all duration-150 z-40 hover:shadow-2xl"
       >
         +
       </button>
 
       {toast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#1a1a2e] text-white px-5 py-2.5 rounded-2xl text-sm font-medium shadow-xl z-50 animate-slide-down">
           {toast}
         </div>
       )}
@@ -138,13 +138,13 @@ function MealCard({ meal, onEdit, onDeleted }) {
   }
 
   return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100/40 flex overflow-hidden active:scale-[0.99] transition-all duration-150 hover:shadow-md">
-      <div className="w-[3px] flex-shrink-0 bg-emerald-400 rounded-l-2xl" />
+    <div className="bg-white rounded-2xl shadow-sm border border-sand-200/60 flex overflow-hidden active:scale-[0.99] transition-all duration-150 hover:shadow-md">
+      <div className="w-[3px] flex-shrink-0 bg-green-accent rounded-l-2xl" />
       <div className="flex-1 min-w-0 px-4 py-3.5" onClick={onEdit}>
-        <p className="text-[14px] font-semibold text-gray-800">{meal.name}</p>
+        <p className="text-[14px] font-semibold text-[#1a1a2e]">{meal.name}</p>
         <div className="flex flex-wrap gap-1 mt-2">
           {meal.ingredients.map((ing, i) => (
-            <span key={i} className="text-[10px] bg-emerald-50/60 text-emerald-600/70 px-2 py-0.5 rounded-lg capitalize font-medium">
+            <span key={i} className="text-[10px] bg-green-subtle text-green-accent/70 px-2 py-0.5 rounded-lg capitalize font-medium">
               {ing}
             </span>
           ))}
@@ -152,7 +152,7 @@ function MealCard({ meal, onEdit, onDeleted }) {
       </div>
       <button
         onClick={handleDelete}
-        className="px-3.5 text-gray-200 hover:text-red-400 active:text-red-500 transition-colors self-center"
+        className="px-3.5 text-sand-200 hover:text-red-400 active:text-red-500 transition-colors self-center"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -206,7 +206,7 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
 
   return (
     <div className="animate-scale-in">
-      <button onClick={onClose} className="text-sm text-gray-400 mb-4 flex items-center gap-1">
+      <button onClick={onClose} className="text-sm text-sand-300 mb-4 flex items-center gap-1">
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
         </svg>
@@ -220,7 +220,7 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Naam (bijv. Havermout met fruit)"
-          className="w-full px-4 py-3.5 bg-white border border-gray-200/80 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+          className="w-full px-4 py-3.5 bg-white border border-sand-200 rounded-2xl text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
           autoFocus
         />
 
@@ -232,8 +232,8 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
               onClick={() => setCategory(value)}
               className={`py-2.5 rounded-xl text-xs font-semibold transition-all ${
                 category === value
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
-                  : 'bg-white text-gray-400 border border-gray-100'
+                  ? 'bg-green-accent text-white shadow-md shadow-green-accent/20'
+                  : 'bg-white text-sand-300 border border-sand-200'
               }`}
             >
               {label}
@@ -247,10 +247,10 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
             {ingredients.map((ing) => (
               <span
                 key={ing}
-                className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-medium capitalize"
+                className="inline-flex items-center gap-1 bg-green-subtle text-green-accent px-3 py-1.5 rounded-full text-sm font-medium capitalize"
               >
                 {ing}
-                <button onClick={() => removeIngredient(ing)} className="ml-0.5 text-emerald-400 hover:text-emerald-600">
+                <button onClick={() => removeIngredient(ing)} className="ml-0.5 text-green-light hover:text-green-accent">
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -267,12 +267,12 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ingredient toevoegen..."
-            className="flex-1 px-4 py-3 bg-white border border-gray-200/80 rounded-2xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-300 transition-all"
+            className="flex-1 px-4 py-3 bg-white border border-sand-200 rounded-2xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-green-accent/30 focus:border-green-light transition-all"
           />
           <button
             onClick={addIngredient}
             disabled={!inputValue.trim()}
-            className="px-4 py-3 bg-emerald-50 text-emerald-600 rounded-2xl text-sm font-semibold disabled:opacity-30 active:scale-95 transition-all"
+            className="px-4 py-3 bg-green-subtle text-green-accent rounded-2xl text-sm font-semibold disabled:opacity-30 active:scale-95 transition-all"
           >
             +
           </button>
@@ -282,7 +282,7 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
         <button
           onClick={handleSave}
           disabled={!name.trim() || ingredients.length === 0}
-          className="w-full py-4 bg-gradient-to-b from-emerald-500 to-emerald-600 text-white rounded-2xl font-semibold text-base shadow-lg shadow-emerald-500/30 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+          className="w-full py-4 bg-green-accent text-white rounded-2xl font-semibold text-base shadow-lg shadow-green-accent/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
         >
           {meal?.id ? 'Bijwerken' : 'Maaltijd opslaan'}
         </button>
