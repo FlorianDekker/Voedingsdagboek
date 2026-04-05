@@ -1,32 +1,46 @@
 import { useRef, useCallback } from 'react'
 
-const MIN_SWIPE_DISTANCE = 50
+const MIN_SWIPE_DISTANCE = 60
+const MAX_VERTICAL_RATIO = 0.75 // horizontal distance must be at least 1.33x vertical
 
 export function useSwipe(onSwipeLeft, onSwipeRight) {
-  const touchStart = useRef(null)
-  const touchEnd = useRef(null)
+  const startX = useRef(null)
+  const startY = useRef(null)
+  const endX = useRef(null)
+  const endY = useRef(null)
 
   const onTouchStart = useCallback((e) => {
-    touchEnd.current = null
-    touchStart.current = e.targetTouches[0].clientX
+    const touch = e.targetTouches[0]
+    startX.current = touch.clientX
+    startY.current = touch.clientY
+    endX.current = null
+    endY.current = null
   }, [])
 
   const onTouchMove = useCallback((e) => {
-    touchEnd.current = e.targetTouches[0].clientX
+    const touch = e.targetTouches[0]
+    endX.current = touch.clientX
+    endY.current = touch.clientY
   }, [])
 
   const onTouchEnd = useCallback(() => {
-    if (!touchStart.current || !touchEnd.current) return
-    const distance = touchStart.current - touchEnd.current
-    if (Math.abs(distance) >= MIN_SWIPE_DISTANCE) {
-      if (distance > 0) {
+    if (startX.current == null || endX.current == null) return
+
+    const dx = startX.current - endX.current
+    const dy = Math.abs(startY.current - endY.current)
+    const adx = Math.abs(dx)
+
+    // Only trigger if horizontal movement is dominant and far enough
+    if (adx >= MIN_SWIPE_DISTANCE && dy < adx * MAX_VERTICAL_RATIO) {
+      if (dx > 0) {
         onSwipeLeft()
       } else {
         onSwipeRight()
       }
     }
-    touchStart.current = null
-    touchEnd.current = null
+
+    startX.current = null
+    startY.current = null
   }, [onSwipeLeft, onSwipeRight])
 
   return { onTouchStart, onTouchMove, onTouchEnd }
