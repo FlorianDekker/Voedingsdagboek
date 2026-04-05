@@ -288,6 +288,66 @@ function getRiskLevel(lift, followRate, timesEaten) {
   return 'laag'
 }
 
+/**
+ * Compute severity timeline for a specific ingredient: average severity per 2-hour bucket
+ * in the 48 hours after eating it, across all occurrences.
+ */
+export function computeIngredientTimeline(allEntries, ingredientName) {
+  const BUCKET_HOURS = 2
+  const MAX_HOURS = 48
+  const bucketCount = MAX_HOURS / BUCKET_HOURS // 24 buckets
+
+  const meals = []
+  const symptoms = []
+  for (const e of allEntries) {
+    const ts = new Date(e.timestamp).getTime()
+    if (e.type === 'maaltijd') meals.push({ ...e, _ts: ts })
+    else if (e.type === 'klacht') symptoms.push({ ...e, _ts: ts })
+  }
+  symptoms.sort((a, b) => a._ts - b._ts)
+
+  // Find all meals containing this ingredient
+  const targetMeals = meals.filter(m => {
+    if (!m.description) return false
+    const ings = m.description.split(',').map(s => normalizeFood(s.trim())).filter(Boolean)
+    return ings.includes(ingredientName)
+  })
+
+  if (targetMeals.length === 0) return null
+
+  // For each bucket, collect severities across all occurrences
+  const buckets = Array.from({ length: bucketCount }, (_, i) => ({
+    hourStart: i * BUCKET_HOURS,
+    hourEnd: (i + 1) * BUCKET_HOURS,
+    label: `${i * BUCKET_HOURS}u`,
+    severities: [],
+  }))
+
+  for (const meal of targetMeals) {
+    for (const s of symptoms) {
+      const hoursAfter = (s._ts - meal._ts) / 3600000
+      if (hoursAfter < 0) continue
+      if (hoursAfter >= MAX_HOURS) break
+      const bucketIdx = Math.floor(hoursAfter / BUCKET_HOURS)
+      if (bucketIdx < bucketCount) {
+        buckets[bucketIdx].severities.push(s.severity)
+      }
+    }
+  }
+
+  return {
+    ingredient: ingredientName,
+    occurrences: targetMeals.length,
+    buckets: buckets.map(b => ({
+      hourStart: b.hourStart,
+      hourEnd: b.hourEnd,
+      label: b.label,
+      avg: b.severities.length > 0 ? b.severities.reduce((a, v) => a + v, 0) / b.severities.length : null,
+      count: b.severities.length,
+    })),
+  }
+}
+
 // Keep old exports for backwards compat during transition
 export async function analyzeCorrelations() {
   const entries = await db.entries.toArray()

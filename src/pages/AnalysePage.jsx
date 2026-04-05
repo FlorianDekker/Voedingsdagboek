@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
-import { computeAllAnalytics } from '../utils/correlation'
+import { computeAllAnalytics, computeIngredientTimeline } from '../utils/correlation'
 import { generateInsights } from '../utils/insights'
 import '../utils/chartSetup'
 
@@ -9,6 +9,7 @@ import SummaryStats from '../components/analyse/SummaryStats'
 import InsightCards from '../components/analyse/InsightCards'
 import SeverityChart from '../components/analyse/SeverityChart'
 import IngredientRiskTable from '../components/analyse/IngredientRiskTable'
+import IngredientTimelineChart from '../components/analyse/IngredientTimelineChart'
 import HourlyChart from '../components/analyse/HourlyChart'
 import WeekdayChart from '../components/analyse/WeekdayChart'
 import MealTypeCard from '../components/analyse/MealTypeCard'
@@ -24,6 +25,7 @@ const RANGES = [
 export default function AnalysePage() {
   const [range, setRange] = useState(30)
   const [animDir, setAnimDir] = useState(null)
+  const [selectedIngredient, setSelectedIngredient] = useState(null)
   const entries = useLiveQuery(() => db.entries.toArray())
   const pageRef = useRef(null)
   const activeRef = useRef(RANGES.findIndex(r => r.value === 30))
@@ -83,6 +85,11 @@ export default function AnalysePage() {
     return generateInsights(analytics)
   }, [analytics])
 
+  const ingredientTimeline = useMemo(() => {
+    if (!entries || !selectedIngredient) return null
+    return computeIngredientTimeline(entries, selectedIngredient)
+  }, [entries, selectedIngredient])
+
   const loading = !entries || !analytics
 
   return (
@@ -117,7 +124,19 @@ export default function AnalysePage() {
               ? `Welke ingrediënten veroorzaken klachten? Baseline: ${Math.round(analytics.baselineRate * 100)}%`
               : 'Welke ingrediënten veroorzaken klachten?'}
           </p>
-          <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
+          <IngredientRiskTable
+            ingredients={analytics.ingredients}
+            baselineRate={analytics.baselineRate}
+            onSelectIngredient={setSelectedIngredient}
+            selectedIngredient={selectedIngredient}
+          />
+
+          {ingredientTimeline && (
+            <IngredientTimelineChart
+              timeline={ingredientTimeline}
+              onClose={() => setSelectedIngredient(null)}
+            />
+          )}
         </div>
 
         {/* Summary stats */}

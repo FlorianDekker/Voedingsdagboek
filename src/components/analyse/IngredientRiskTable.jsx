@@ -20,7 +20,7 @@ function getSeverityColor(avg) {
   return SEVERITY_COLORS[5]
 }
 
-export default function IngredientRiskTable({ ingredients, baselineRate }) {
+export default function IngredientRiskTable({ ingredients, baselineRate, onSelectIngredient, selectedIngredient }) {
   if (!ingredients || ingredients.length === 0) {
     return (
       <div className="text-center py-10">
@@ -44,7 +44,13 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
       {/* Top suspects — larger cards */}
       <div className="space-y-3 mb-3">
         {topItems.map((item, idx) => (
-          <TopIngredientCard key={item.name} item={item} rank={idx + 1} />
+          <TopIngredientCard
+            key={item.name}
+            item={item}
+            rank={idx + 1}
+            isSelected={selectedIngredient === item.name}
+            onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
+          />
         ))}
       </div>
 
@@ -52,7 +58,12 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
       {restItems.length > 0 && (
         <div className="space-y-1.5">
           {restItems.map((item) => (
-            <CompactIngredientRow key={item.name} item={item} />
+            <CompactIngredientRow
+              key={item.name}
+              item={item}
+              isSelected={selectedIngredient === item.name}
+              onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
+            />
           ))}
         </div>
       )}
@@ -60,7 +71,7 @@ export default function IngredientRiskTable({ ingredients, baselineRate }) {
   )
 }
 
-function TopIngredientCard({ item, rank }) {
+function TopIngredientCard({ item, rank, isSelected, onTap }) {
   const style = RISK_STYLES[item.riskLevel]
   const pct = Math.round(item.followRate * 100)
   const dots = CONFIDENCE_DOTS[item.confidence]
@@ -69,7 +80,10 @@ function TopIngredientCard({ item, rank }) {
   const sevColor = item.avgSeverity > 0 ? getSeverityColor(item.avgSeverity) : '#d0d0d0'
 
   return (
-    <div className={`rounded-2xl p-4 ${style.bg} border ${style.border} relative overflow-hidden ${isLowConf ? 'opacity-60' : ''}`}>
+    <div
+      onClick={onTap}
+      className={`rounded-2xl p-4 ${style.bg} border ${style.border} relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all ${isLowConf ? 'opacity-60' : ''} ${isSelected ? 'ring-2 ring-primary' : ''}`}
+    >
       {/* Progress bar background */}
       <div
         className="absolute inset-y-0 left-0 opacity-[0.07]"
@@ -133,14 +147,17 @@ function TopIngredientCard({ item, rank }) {
   )
 }
 
-function CompactIngredientRow({ item }) {
+function CompactIngredientRow({ item, isSelected, onTap }) {
   const style = RISK_STYLES[item.riskLevel]
   const pct = Math.round(item.followRate * 100)
   const isLowConf = item.confidence === 'low'
   const liftUp = item.lift > 1.1
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-2.5 rounded-xl ${style.bg} overflow-hidden relative ${isLowConf ? 'opacity-60' : ''}`}>
+    <div
+      onClick={onTap}
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl ${style.bg} overflow-hidden relative cursor-pointer active:scale-[0.98] transition-all ${isLowConf ? 'opacity-60' : ''} ${isSelected ? 'ring-2 ring-primary' : ''}`}
+    >
       <div
         className="absolute inset-y-0 left-0 opacity-10"
         style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: style.barColor }}
