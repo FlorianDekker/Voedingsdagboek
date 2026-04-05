@@ -109,6 +109,17 @@ export default function AnalysePage() {
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       ) : <div className={slideClass}>
+        {/* Ingredient analysis — most important, shown first */}
+        <div className="mb-5">
+          <h2 className="text-[17px] font-bold text-[#1a1a1a] mb-1">Ingrediënten analyse</h2>
+          <p className="text-xs text-muted mb-4">
+            {analytics.baselineRate > 0
+              ? `Welke ingrediënten veroorzaken klachten? Baseline: ${Math.round(analytics.baselineRate * 100)}%`
+              : 'Welke ingrediënten veroorzaken klachten?'}
+          </p>
+          <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
+        </div>
+
         {/* Summary stats */}
         <div className="mb-5">
           <SummaryStats summary={analytics.summary} />
@@ -121,17 +132,6 @@ export default function AnalysePage() {
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
           <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Klachten over tijd</h2>
           <SeverityChart data={analytics.dailySeverity} movingAverage={analytics.movingAverage} />
-        </div>
-
-        {/* Ingredient analysis */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
-          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
-          <p className="text-[10px] text-muted/70 mb-4">
-            {analytics.baselineRate > 0
-              ? `Baseline: ${Math.round(analytics.baselineRate * 100)}% van maaltijden gevolgd door klachten`
-              : 'Geen baseline beschikbaar'}
-          </p>
-          <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
         </div>
 
         {/* Patterns section */}
