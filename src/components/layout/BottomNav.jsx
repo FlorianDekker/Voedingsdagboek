@@ -55,7 +55,7 @@ function PlusIcon({ className }) {
 function MealIcon({ className }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 3v18m0-6c0-3.5 3-4 4-4s4 .5 4 4M20 3c0 3-1.5 5-3 5h-1V3m-1 0v18m1-10c1.5 0 3-2 3-5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7 3v5a3 3 0 006 0V3M10 8v13M17 3l-1 7h3l-1-7zM18 10l-.5 11" />
     </svg>
   )
 }
