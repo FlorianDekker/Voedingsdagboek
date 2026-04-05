@@ -66,24 +66,17 @@ export default function DagboekPage() {
 
   const slideClass = animDir === 'left' ? 'animate-slide-in-left' : animDir === 'right' ? 'animate-slide-in-right' : ''
 
-  if (entries === undefined) {
-    return (
-      <div ref={pageRef}>
-        <DaySelector date={selectedDate} onChange={setSelectedDate} />
-        <div className="flex justify-center py-12">
-          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      </div>
-    )
-  }
-
-  const isEmpty = entries.length === 0
+  const isEmpty = !entries || entries.length === 0
 
   return (
     <div ref={pageRef}>
       <DaySelector date={selectedDate} onChange={setSelectedDate} />
 
-      {isEmpty ? (
+      {entries === undefined ? (
+        <div className="flex justify-center py-12">
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : isEmpty ? (
         <div className={`text-center py-16 animate-fade-in ${slideClass}`}>
           <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-muted-light" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

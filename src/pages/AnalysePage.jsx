@@ -83,13 +83,7 @@ export default function AnalysePage() {
     return generateInsights(analytics)
   }, [analytics])
 
-  if (!entries || !analytics) {
-    return (
-      <div className="flex justify-center py-12">
-        <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
+  const loading = !entries || !analytics
 
   return (
     <div ref={pageRef} className="space-y-5">
@@ -110,7 +104,11 @@ export default function AnalysePage() {
         ))}
       </div>
 
-      <div className={slideClass}>
+      {loading ? (
+        <div className="flex justify-center py-12">
+          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      ) : <div className={slideClass}>
         {/* Summary stats */}
         <div className="mb-5">
           <SummaryStats summary={analytics.summary} />
@@ -162,7 +160,7 @@ export default function AnalysePage() {
           <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Reeksen</h2>
           <StreakCard streaks={analytics.streaks} />
         </div>
-      </div>
+      </div>}
     </div>
   )
 }
