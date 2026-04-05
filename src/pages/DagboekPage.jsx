@@ -57,8 +57,8 @@ const FOOD_EMOJI = [
   ['sandwich', '🥪'], ['tosti', '🥪'], ['hot dog', '🌭'],
 ]
 
-function getFoodEmoji(ingredients, mealType) {
-  const text = ingredients.join(' ').toLowerCase()
+function getFoodEmoji(ingredients, mealType, mealName) {
+  const text = (ingredients.join(' ') + ' ' + (mealName || '')).toLowerCase()
   for (const [keyword, emoji] of FOOD_EMOJI) {
     if (text.includes(keyword)) return emoji
   }
@@ -190,7 +190,7 @@ function MealRow({ entry }) {
       <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-3 mr-1">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
-            <span className="text-sm">{getFoodEmoji(ingredients, entry.mealType)}</span>
+            <span className="text-sm">{getFoodEmoji(ingredients, entry.mealType, entry.note)}</span>
             <p className="text-[13px] font-semibold text-[#1a1a1a]">{entry.note || 'Maaltijd'}</p>
           </div>
           <div className="flex items-center gap-1.5">
