@@ -45,10 +45,30 @@ export function computeAllAnalytics(allEntries, daysBack) {
   meals.sort((a, b) => a._ts - b._ts)
   symptoms.sort((a, b) => a._ts - b._ts)
 
+  // === DEDUPLICATE SYMPTOMS INTO EPISODES ===
+  // Multiple complaints within 4 hours = one episode (max severity)
+  // This prevents logging the same feeling multiple times from inflating stats
+  const EPISODE_GAP_MS = 4 * 3600000
+  const episodes = []
+  for (const s of symptoms) {
+    const last = episodes[episodes.length - 1]
+    if (last && s._ts - last._ts < EPISODE_GAP_MS) {
+      // Merge into existing episode — keep max severity
+      if (s.severity > last.severity) {
+        last.severity = s.severity
+      }
+    } else {
+      episodes.push({ ...s })
+    }
+  }
+
+  // Use episodes instead of raw symptoms for all analysis
+  const dedupedSymptoms = episodes
+
   // === BASELINE SYMPTOM RATE ===
   let mealsWithSymptoms = 0
   for (const meal of meals) {
-    if (hasSymptomInWindow(meal._ts, symptoms)) {
+    if (hasSymptomInWindow(meal._ts, dedupedSymptoms)) {
       mealsWithSymptoms++
     }
   }
@@ -60,8 +80,8 @@ export function computeAllAnalytics(allEntries, daysBack) {
   for (const meal of meals) {
     if (!meal.description) continue
     const ingredients = meal.description.split(',').map(s => normalizeFood(s.trim())).filter(Boolean)
-    const followed = hasSymptomInWindow(meal._ts, symptoms)
-    const maxSev = followed ? getMaxSeverityInWindow(meal._ts, symptoms) : 0
+    const followed = hasSymptomInWindow(meal._ts, dedupedSymptoms)
+    const maxSev = followed ? getMaxSeverityInWindow(meal._ts, dedupedSymptoms) : 0
 
     for (const ing of ingredients) {
       if (!ingredientMap.has(ing)) {
@@ -92,9 +112,9 @@ export function computeAllAnalytics(allEntries, daysBack) {
   }
   ingredients.sort((a, b) => b.riskScore - a.riskScore)
 
-  // === DAILY SEVERITY ===
+  // === DAILY SEVERITY (using deduplicated episodes) ===
   const dailyMap = new Map()
-  for (const s of symptoms) {
+  for (const s of dedupedSymptoms) {
     const day = new Date(s._ts).toDateString()
     if (!dailyMap.has(day)) dailyMap.set(day, [])
     dailyMap.get(day).push(s.severity)
@@ -124,9 +144,9 @@ export function computeAllAnalytics(allEntries, daysBack) {
     })
   }
 
-  // === HOURLY PATTERN ===
+  // === HOURLY PATTERN (using deduplicated episodes) ===
   const hourlyPattern = Array.from({ length: 24 }, (_, h) => ({ hour: h, count: 0, totalSeverity: 0, avgSeverity: 0 }))
-  for (const s of symptoms) {
+  for (const s of dedupedSymptoms) {
     const h = new Date(s._ts).getHours()
     hourlyPattern[h].count++
     hourlyPattern[h].totalSeverity += s.severity
@@ -138,7 +158,7 @@ export function computeAllAnalytics(allEntries, daysBack) {
   // === WEEKDAY PATTERN ===
   // JS getDay: 0=Sun, we want 0=Mon
   const weekdayBuckets = Array.from({ length: 7 }, () => ({ total: 0, count: 0 }))
-  for (const s of symptoms) {
+  for (const s of dedupedSymptoms) {
     const jsDay = new Date(s._ts).getDay()
     const idx = jsDay === 0 ? 6 : jsDay - 1 // Convert Sun=0 to Mon=0
     weekdayBuckets[idx].total += s.severity
@@ -160,7 +180,7 @@ export function computeAllAnalytics(allEntries, daysBack) {
     const type = meal.mealType
     if (!mealTypeBuckets[type]) continue
     mealTypeBuckets[type].total++
-    if (hasSymptomInWindow(meal._ts, symptoms)) {
+    if (hasSymptomInWindow(meal._ts, dedupedSymptoms)) {
       mealTypeBuckets[type].followed++
     }
   }
@@ -217,9 +237,9 @@ export function computeAllAnalytics(allEntries, daysBack) {
     else if (recentAvg > prevAvg + 0.3) direction = 'worsening'
   }
 
-  // === SUMMARY ===
-  const totalSymptoms = symptoms.length
-  const avgSeverityAll = totalSymptoms > 0 ? symptoms.reduce((a, s) => a + s.severity, 0) / totalSymptoms : 0
+  // === SUMMARY (using deduplicated episodes) ===
+  const totalSymptoms = dedupedSymptoms.length
+  const avgSeverityAll = totalSymptoms > 0 ? dedupedSymptoms.reduce((a, s) => a + s.severity, 0) / totalSymptoms : 0
   const daysTracked = dailySeverity.length
   const symptomFreeDays = dailySeverity.filter(d => d.count === 0).length
 
