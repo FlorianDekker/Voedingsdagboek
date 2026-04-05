@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES } from '../constants/mealTypes'
+import { getFoodEmoji } from '../utils/foodEmoji'
 
 export default function MaaltijdenPage() {
   const [activeTab, setActiveTab] = useState(MEAL_TYPES[0].value)
@@ -141,7 +142,10 @@ function MealCard({ meal, onEdit, onDeleted }) {
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex overflow-hidden active:scale-[0.99] transition-all duration-150 hover:shadow-md">
       <div className="w-[3px] flex-shrink-0 bg-primary rounded-l-2xl" />
       <div className="flex-1 min-w-0 px-4 py-3.5" onClick={onEdit}>
-        <p className="text-[14px] font-semibold text-[#1a1a1a]">{meal.name}</p>
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-base">{getFoodEmoji(meal.ingredients, meal.category, meal.name)}</span>
+          <p className="text-[14px] font-semibold text-[#1a1a1a]">{meal.name}</p>
+        </div>
         <div className="flex flex-wrap gap-1 mt-2">
           {meal.ingredients.map((ing, i) => (
             <span key={i} className="text-[10px] bg-primary-subtle text-primary-dark px-2 py-0.5 rounded-lg capitalize font-medium">
