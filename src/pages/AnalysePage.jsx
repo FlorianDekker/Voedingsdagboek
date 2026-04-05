@@ -1,9 +1,8 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { computeAllAnalytics } from '../utils/correlation'
 import { generateInsights } from '../utils/insights'
-import { useSwipe } from '../hooks/useSwipe'
 import '../utils/chartSetup'
 
 import SummaryStats from '../components/analyse/SummaryStats'
@@ -22,23 +21,57 @@ const RANGES = [
   { value: 0, label: 'Alles' },
 ]
 
-const RANGE_VALUES = RANGES.map(r => r.value)
-
 export default function AnalysePage() {
   const [range, setRange] = useState(30)
+  const [animDir, setAnimDir] = useState(null)
   const entries = useLiveQuery(() => db.entries.toArray())
+  const pageRef = useRef(null)
+  const activeRef = useRef(RANGES.findIndex(r => r.value === 30))
+  const animating = useRef(false)
 
-  const goNextRange = useCallback(() => {
-    const idx = RANGE_VALUES.indexOf(range)
-    if (idx < RANGE_VALUES.length - 1) setRange(RANGE_VALUES[idx + 1])
-  }, [range])
+  function goTo(nextIdx) {
+    if (nextIdx === activeRef.current || animating.current) return
+    if (nextIdx < 0 || nextIdx >= RANGES.length) return
+    animating.current = true
+    setAnimDir(nextIdx > activeRef.current ? 'left' : 'right')
+    activeRef.current = nextIdx
+    setRange(RANGES[nextIdx].value)
+    setTimeout(() => { setAnimDir(null); animating.current = false }, 320)
+  }
 
-  const goPrevRange = useCallback(() => {
-    const idx = RANGE_VALUES.indexOf(range)
-    if (idx > 0) setRange(RANGE_VALUES[idx - 1])
-  }, [range])
+  useEffect(() => {
+    const el = pageRef.current
+    if (!el) return
+    let startX = null, startY = null, horizontal = null
+    const onStart = e => {
+      const x = e.touches[0].clientX
+      if (x < 24) return
+      startX = x; startY = e.touches[0].clientY; horizontal = null
+    }
+    const onMove = e => {
+      if (startX === null) return
+      const dx = Math.abs(e.touches[0].clientX - startX)
+      const dy = Math.abs(e.touches[0].clientY - startY)
+      if (horizontal === null && (dx > 5 || dy > 5)) horizontal = dx > dy
+      if (horizontal) e.preventDefault()
+    }
+    const onEnd = e => {
+      if (startX === null) return
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = Math.abs(e.changedTouches[0].clientY - startY)
+      startX = null
+      if (!horizontal || Math.abs(dx) < 50 || dy > Math.abs(dx)) return
+      const cur = activeRef.current
+      if (dx < 0 && cur < RANGES.length - 1) goTo(cur + 1)
+      else if (dx > 0 && cur > 0) goTo(cur - 1)
+    }
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => { el.removeEventListener('touchstart', onStart); el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd) }
+  }, [])
 
-  const swipeHandlers = useSwipe(goNextRange, goPrevRange)
+  const slideClass = animDir === 'left' ? 'animate-slide-in-left' : animDir === 'right' ? 'animate-slide-in-right' : ''
 
   const analytics = useMemo(() => {
     if (!entries) return null
@@ -59,13 +92,13 @@ export default function AnalysePage() {
   }
 
   return (
-    <div className="space-y-5">
+    <div ref={pageRef} className="space-y-5">
       {/* Range selector */}
-      <div className="flex bg-surface rounded-xl p-1" {...swipeHandlers}>
-        {RANGES.map(({ value, label }) => (
+      <div className="flex bg-surface rounded-xl p-1">
+        {RANGES.map(({ value, label }, i) => (
           <button
             key={value}
-            onClick={() => setRange(value)}
+            onClick={() => goTo(i)}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
               range === value
                 ? 'bg-white text-primary shadow-sm'
@@ -77,54 +110,58 @@ export default function AnalysePage() {
         ))}
       </div>
 
-      {/* Summary stats */}
-      <SummaryStats summary={analytics.summary} />
+      <div className={slideClass}>
+        {/* Summary stats */}
+        <div className="mb-5">
+          <SummaryStats summary={analytics.summary} />
+        </div>
 
-      {/* Auto-generated insights */}
-      {insights.length > 0 && <InsightCards insights={insights} />}
+        {/* Auto-generated insights */}
+        {insights.length > 0 && <div className="mb-5"><InsightCards insights={insights} /></div>}
 
-      {/* Severity over time */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Klachten over tijd</h2>
-        <SeverityChart data={analytics.dailySeverity} movingAverage={analytics.movingAverage} />
-      </div>
+        {/* Severity over time */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Klachten over tijd</h2>
+          <SeverityChart data={analytics.dailySeverity} movingAverage={analytics.movingAverage} />
+        </div>
 
-      {/* Ingredient analysis */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
-        <p className="text-[10px] text-muted/70 mb-4">
-          {analytics.baselineRate > 0
-            ? `Baseline: ${Math.round(analytics.baselineRate * 100)}% van maaltijden gevolgd door klachten`
-            : 'Geen baseline beschikbaar'}
-        </p>
-        <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
-      </div>
+        {/* Ingredient analysis */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-1">Ingrediënten analyse</h2>
+          <p className="text-[10px] text-muted/70 mb-4">
+            {analytics.baselineRate > 0
+              ? `Baseline: ${Math.round(analytics.baselineRate * 100)}% van maaltijden gevolgd door klachten`
+              : 'Geen baseline beschikbaar'}
+          </p>
+          <IngredientRiskTable ingredients={analytics.ingredients} baselineRate={analytics.baselineRate} />
+        </div>
 
-      {/* Patterns section */}
-      <div>
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Patronen</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per uur</p>
-            <HourlyChart data={analytics.hourlyPattern} />
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per dag</p>
-            <WeekdayChart data={analytics.weekdayPattern} />
+        {/* Patterns section */}
+        <div className="mb-5">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Patronen</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per uur</p>
+              <HourlyChart data={analytics.hourlyPattern} />
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mb-3">Per dag</p>
+              <WeekdayChart data={analytics.weekdayPattern} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Meal type breakdown */}
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Per maaltijdtype</h2>
-        <MealTypeCard data={analytics.mealTypePattern} />
-      </div>
+        {/* Meal type breakdown */}
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-5">
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-4">Per maaltijdtype</h2>
+          <MealTypeCard data={analytics.mealTypePattern} />
+        </div>
 
-      {/* Streaks */}
-      <div>
-        <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Reeksen</h2>
-        <StreakCard streaks={analytics.streaks} />
+        {/* Streaks */}
+        <div>
+          <h2 className="text-xs font-semibold text-muted uppercase tracking-wider mb-3 px-1">Reeksen</h2>
+          <StreakCard streaks={analytics.streaks} />
+        </div>
       </div>
     </div>
   )

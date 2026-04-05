@@ -1,8 +1,7 @@
-import { useState, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import DaySelector from '../components/dagboek/DaySelector'
 import { useEntriesForDay } from '../hooks/useEntries'
-import { useSwipe } from '../hooks/useSwipe'
 import { db } from '../db/db'
 import { formatTime, isSameDay } from '../utils/formatters'
 import { MEAL_TYPES, SEVERITY_LABELS, SEVERITY_COLORS } from '../constants/mealTypes'
@@ -16,30 +15,61 @@ const MEAL_ICONS = {
 
 export default function DagboekPage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
+  const [animDir, setAnimDir] = useState(null)
   const entries = useEntriesForDay(selectedDate)
+  const pageRef = useRef(null)
+  const dateRef = useRef(selectedDate)
+  const animating = useRef(false)
+  dateRef.current = selectedDate
 
-  const goNext = useCallback(() => {
-    if (!isSameDay(selectedDate, new Date())) {
-      const d = new Date(selectedDate)
-      d.setDate(d.getDate() + 1)
-      setSelectedDate(d)
-    }
-  }, [selectedDate])
-
-  const goPrev = useCallback(() => {
-    const d = new Date(selectedDate)
-    d.setDate(d.getDate() - 1)
+  function shift(dir) {
+    if (animating.current) return
+    if (dir === 1 && isSameDay(dateRef.current, new Date())) return
+    animating.current = true
+    setAnimDir(dir === 1 ? 'left' : 'right')
+    const d = new Date(dateRef.current)
+    d.setDate(d.getDate() + dir)
     setSelectedDate(d)
-  }, [selectedDate])
+    setTimeout(() => { setAnimDir(null); animating.current = false }, 320)
+  }
 
-  const swipeHandlers = useSwipe(goNext, goPrev)
+  useEffect(() => {
+    const el = pageRef.current
+    if (!el) return
+    let startX = null, startY = null, horizontal = null
+    const onStart = e => {
+      const x = e.touches[0].clientX
+      if (x < 24) return
+      startX = x; startY = e.touches[0].clientY; horizontal = null
+    }
+    const onMove = e => {
+      if (startX === null) return
+      const dx = Math.abs(e.touches[0].clientX - startX)
+      const dy = Math.abs(e.touches[0].clientY - startY)
+      if (horizontal === null && (dx > 5 || dy > 5)) horizontal = dx > dy
+      if (horizontal) e.preventDefault()
+    }
+    const onEnd = e => {
+      if (startX === null) return
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = Math.abs(e.changedTouches[0].clientY - startY)
+      startX = null
+      if (!horizontal || Math.abs(dx) < 50 || dy > Math.abs(dx)) return
+      if (dx < 0) shift(1)
+      else shift(-1)
+    }
+    el.addEventListener('touchstart', onStart, { passive: true })
+    el.addEventListener('touchmove', onMove, { passive: false })
+    el.addEventListener('touchend', onEnd, { passive: true })
+    return () => { el.removeEventListener('touchstart', onStart); el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd) }
+  }, [])
+
+  const slideClass = animDir === 'left' ? 'animate-slide-in-left' : animDir === 'right' ? 'animate-slide-in-right' : ''
 
   if (entries === undefined) {
     return (
-      <div>
-        <div {...swipeHandlers}>
-          <DaySelector date={selectedDate} onChange={setSelectedDate} />
-        </div>
+      <div ref={pageRef}>
+        <DaySelector date={selectedDate} onChange={setSelectedDate} />
         <div className="flex justify-center py-12">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -50,13 +80,11 @@ export default function DagboekPage() {
   const isEmpty = entries.length === 0
 
   return (
-    <div>
-      <div {...swipeHandlers}>
-        <DaySelector date={selectedDate} onChange={setSelectedDate} />
-      </div>
+    <div ref={pageRef}>
+      <DaySelector date={selectedDate} onChange={setSelectedDate} />
 
       {isEmpty ? (
-        <div className="text-center py-16 animate-fade-in">
+        <div className={`text-center py-16 animate-fade-in ${slideClass}`}>
           <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-7 h-7 text-muted-light" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
@@ -72,7 +100,7 @@ export default function DagboekPage() {
           </Link>
         </div>
       ) : (
-        <div className="relative animate-fade-in">
+        <div className={`relative animate-fade-in ${slideClass}`}>
           {/* Timeline line */}
           <div className="absolute left-[19px] top-2 bottom-2 w-[2px] bg-gray-100 rounded-full" />
 
