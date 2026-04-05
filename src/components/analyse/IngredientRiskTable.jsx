@@ -82,7 +82,7 @@ function TopIngredientCard({ item, rank, isSelected, onTap }) {
   return (
     <div
       onClick={onTap}
-      className={`rounded-2xl p-4 ${style.bg} border ${style.border} relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all ${isLowConf ? 'opacity-60' : ''} ${isSelected ? 'ring-2 ring-primary' : ''}`}
+      className={`rounded-2xl p-4 ${style.bg} border ${style.border} relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all ${isSelected ? 'ring-2 ring-primary' : ''}`}
     >
       {/* Progress bar background */}
       <div
@@ -156,7 +156,7 @@ function CompactIngredientRow({ item, isSelected, onTap }) {
   return (
     <div
       onClick={onTap}
-      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl ${style.bg} overflow-hidden relative cursor-pointer active:scale-[0.98] transition-all ${isLowConf ? 'opacity-60' : ''} ${isSelected ? 'ring-2 ring-primary' : ''}`}
+      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl ${style.bg} overflow-hidden relative cursor-pointer active:scale-[0.98] transition-all ${isSelected ? 'ring-2 ring-primary' : ''}`}
     >
       <div
         className="absolute inset-y-0 left-0 opacity-10"
