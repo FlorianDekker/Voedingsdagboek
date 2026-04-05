@@ -11,7 +11,7 @@ const tabs = [
 export default function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white z-50" style={{ boxShadow: '0 -1px 0 rgba(0,0,0,0.04), 0 -4px 16px rgba(0,0,0,0.04)' }}>
-      <div className="flex justify-around items-start h-16 pt-2 max-w-sm mx-auto">
+      <div className="flex justify-around items-start h-20 pt-2.5 max-w-sm mx-auto">
         {tabs.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
