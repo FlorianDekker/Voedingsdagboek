@@ -246,13 +246,13 @@ export default function InvoerPage() {
           <div className="flex gap-3 mt-5">
             <button
               onClick={handleAiCancel}
-              className="flex-1 py-3 bg-surface text-muted rounded-2xl text-sm font-semibold active:scale-[0.98] transition-all"
+              className="flex-1 py-3 bg-surface text-muted rounded-full text-sm font-semibold active:scale-[0.98] transition-all"
             >
               Annuleren
             </button>
             <button
               onClick={() => { setAiError(null); fileInputRef.current?.click() }}
-              className="flex-1 py-3 bg-primary text-white rounded-2xl text-sm font-semibold shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+              className="flex-1 py-3 bg-primary text-white rounded-full text-sm font-semibold shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
             >
               Opnieuw
             </button>
@@ -359,7 +359,7 @@ export default function InvoerPage() {
           <button
             onClick={handleAiConfirm}
             disabled={aiChecked.length === 0}
-            className="w-full py-3.5 bg-primary text-white rounded-2xl font-semibold text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+            className="w-full py-3.5 bg-primary text-white rounded-full font-semibold text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
           >
             Opslaan ({aiChecked.length} ingrediënten)
           </button>
@@ -426,7 +426,7 @@ export default function InvoerPage() {
           <button
             onClick={handleConfirmMeal}
             disabled={checkedIngredients.length === 0}
-            className="w-full py-3.5 bg-primary text-white rounded-2xl font-semibold text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+            className="w-full py-3.5 bg-primary text-white rounded-full font-semibold text-sm shadow-lg shadow-primary/20 active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
           >
             Opslaan ({checkedIngredients.length}/{selectedMeal.ingredients.length})
           </button>
@@ -512,7 +512,7 @@ export default function InvoerPage() {
           {/* Camera button */}
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full flex items-center justify-center gap-2.5 py-4 mb-5 bg-primary text-white rounded-2xl font-semibold text-[15px] shadow-lg shadow-primary/20 active:scale-[0.97] transition-all"
+            className="w-full flex items-center justify-center gap-2.5 py-4 mb-5 bg-primary text-white rounded-full font-semibold text-[15px] shadow-lg shadow-primary/20 active:scale-[0.97] transition-all"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
@@ -531,7 +531,7 @@ export default function InvoerPage() {
               </p>
               <Link
                 to="/maaltijden"
-                className="inline-block bg-primary text-white px-6 py-2.5 rounded-2xl text-sm font-semibold shadow-lg shadow-primary/20 active:scale-[0.97] transition-all"
+                className="inline-block bg-primary text-white px-6 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-primary/20 active:scale-[0.97] transition-all"
               >
                 + Maaltijd aanmaken
               </Link>
@@ -634,7 +634,7 @@ function SymptomOnlyInput({ onSaved }) {
       <button
         onClick={handleSave}
         disabled={!severity}
-        className="w-full py-4 rounded-2xl font-semibold text-base text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
+        className="w-full py-4 rounded-full font-semibold text-base text-white shadow-lg active:scale-[0.98] transition-all disabled:opacity-30 disabled:shadow-none"
         style={{
           background: severity
             ? `linear-gradient(to bottom, ${SEVERITY_COLORS[severity]}, ${SEVERITY_COLORS[severity]}dd)`
