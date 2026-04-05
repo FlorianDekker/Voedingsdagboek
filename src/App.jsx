@@ -39,7 +39,7 @@ function App() {
     <ErrorBoundary>
       <div className="flex flex-col min-h-screen pb-24">
         <Routes>
-          <Route path="/" element={<PageContainer title="Dagboek v2"><DagboekPage /></PageContainer>} />
+          <Route path="/" element={<PageContainer title="Dagboek"><DagboekPage /></PageContainer>} />
           <Route path="/invoer" element={<PageContainer title="Invoer"><InvoerPage /></PageContainer>} />
           <Route path="/maaltijden" element={<PageContainer title="Maaltijden"><MaaltijdenPage /></PageContainer>} />
           <Route path="/analyse" element={<PageContainer title="Analyse"><AnalysePage /></PageContainer>} />

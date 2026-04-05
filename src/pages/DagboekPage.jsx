@@ -13,27 +13,33 @@ const MEAL_ICONS = {
   tussendoor: '🍎',
 }
 
-// Maps ingredient keywords to emoji
+// Maps ingredient keywords to emoji — sorted longest first to prevent substring conflicts
+// (e.g. "aardappel" must match before "appel")
 const FOOD_EMOJI = [
+  // Compound words that contain shorter keywords
+  ['aardappel', '🥔'], ['sinaasappel', '🍊'], ['appelstroop', '🍯'],
+  ['appelsap', '🧃'], ['appelmoes', '🍎'], ['pannenkoek', '🥞'],
+  ['ontbijtgranen', '🥣'], ['blauwe bes', '🫐'], ['hot dog', '🌭'],
+  ['frisdrank', '🥤'], ['kokosnoot', '🥥'], ['champignon', '🍄'],
+  ['paddenstoel', '🍄'], ['watermeloen', '🍉'], ['stoofpot', '🍲'],
+  // Brood & granen (before shorter matches)
+  ['brood', '🍞'], ['toast', '🍞'], ['boterham', '🍞'], ['croissant', '🥐'],
+  ['bagel', '🥯'], ['wafel', '🧇'], ['rijst', '🍚'],
+  ['pasta', '🍝'], ['spaghetti', '🍝'], ['noodle', '🍜'], ['noedel', '🍜'],
+  ['havermout', '🥣'], ['muesli', '🥣'],
+  ['tortilla', '🌯'], ['wrap', '🌯'], ['taco', '🌮'], ['pizza', '🍕'],
   // Fruit
-  ['sinaasappel', '🍊'], ['mandarijn', '🍊'], ['appel', '🍎'], ['banaan', '🍌'],
+  ['mandarijn', '🍊'], ['banaan', '🍌'],
   ['aardbei', '🍓'], ['druif', '🍇'], ['druiven', '🍇'], ['citroen', '🍋'],
-  ['watermeloen', '🍉'], ['meloen', '🍈'], ['perzik', '🍑'], ['kers', '🍒'],
+  ['meloen', '🍈'], ['perzik', '🍑'], ['kers', '🍒'],
   ['kersen', '🍒'], ['ananas', '🍍'], ['mango', '🥭'], ['kiwi', '🥝'],
-  ['peer', '🍐'], ['bosbes', '🫐'], ['blauwe bes', '🫐'], ['kokosnoot', '🥥'],
-  ['kokos', '🥥'], ['avocado', '🥑'], ['fruit', '🍎'],
+  ['peer', '🍐'], ['bosbes', '🫐'], ['kokos', '🥥'], ['avocado', '🥑'],
+  ['appel', '🍎'], ['fruit', '🍎'],
   // Groenten
   ['broccoli', '🥦'], ['wortel', '🥕'], ['mais', '🌽'], ['tomaat', '🍅'],
-  ['paprika', '🫑'], ['ui', '🧅'], ['knoflook', '🧄'], ['aardappel', '🥔'],
+  ['paprika', '🫑'], ['ui', '🧅'], ['knoflook', '🧄'],
   ['friet', '🍟'], ['patat', '🍟'], ['sla', '🥬'], ['komkommer', '🥒'],
-  ['aubergine', '🍆'], ['champignon', '🍄'], ['paddenstoel', '🍄'],
-  ['spinazie', '🥬'], ['olijf', '🫒'], ['olijven', '🫒'],
-  // Brood & granen
-  ['brood', '🍞'], ['toast', '🍞'], ['boterham', '🍞'], ['croissant', '🥐'],
-  ['bagel', '🥯'], ['pannenkoek', '🥞'], ['wafel', '🧇'], ['rijst', '🍚'],
-  ['pasta', '🍝'], ['spaghetti', '🍝'], ['noodle', '🍜'], ['noedel', '🍜'],
-  ['havermout', '🥣'], ['ontbijtgranen', '🥣'], ['muesli', '🥣'],
-  ['tortilla', '🌯'], ['wrap', '🌯'], ['taco', '🌮'], ['pizza', '🍕'],
+  ['aubergine', '🍆'], ['spinazie', '🥬'], ['olijf', '🫒'], ['olijven', '🫒'],
   // Vlees & vis
   ['kip', '🍗'], ['chicken', '🍗'], ['vlees', '🥩'], ['steak', '🥩'],
   ['biefstuk', '🥩'], ['gehakt', '🥩'], ['hamburger', '🍔'], ['burger', '🍔'],
@@ -46,15 +52,15 @@ const FOOD_EMOJI = [
   // Drinken
   ['koffie', '☕'], ['thee', '🍵'], ['bier', '🍺'], ['wijn', '🍷'],
   ['sap', '🧃'], ['water', '💧'], ['smoothie', '🥤'], ['cola', '🥤'],
-  ['frisdrank', '🥤'], ['cocktail', '🍹'],
+  ['cocktail', '🍹'],
   // Snacks & zoet
   ['chocola', '🍫'], ['chocolade', '🍫'], ['koek', '🍪'], ['cookie', '🍪'],
   ['cake', '🍰'], ['taart', '🎂'], ['donut', '🍩'], ['snoep', '🍬'],
   ['chips', '🍿'], ['noot', '🥜'], ['noten', '🥜'], ['pinda', '🥜'],
   ['honing', '🍯'], ['popcorn', '🍿'],
   // Overig
-  ['soep', '🍲'], ['stoofpot', '🍲'], ['curry', '🍛'], ['salade', '🥗'],
-  ['sandwich', '🥪'], ['tosti', '🥪'], ['hot dog', '🌭'],
+  ['soep', '🍲'], ['curry', '🍛'], ['salade', '🥗'],
+  ['sandwich', '🥪'], ['tosti', '🥪'],
 ]
 
 function getFoodEmoji(ingredients, mealType, mealName) {
