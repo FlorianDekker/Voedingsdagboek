@@ -36,8 +36,10 @@ export default function DagboekPage() {
 
   if (entries === undefined) {
     return (
-      <div {...swipeHandlers}>
-        <DaySelector date={selectedDate} onChange={setSelectedDate} />
+      <div>
+        <div {...swipeHandlers}>
+          <DaySelector date={selectedDate} onChange={setSelectedDate} />
+        </div>
         <div className="flex justify-center py-12">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
@@ -48,8 +50,10 @@ export default function DagboekPage() {
   const isEmpty = entries.length === 0
 
   return (
-    <div {...swipeHandlers}>
-      <DaySelector date={selectedDate} onChange={setSelectedDate} />
+    <div>
+      <div {...swipeHandlers}>
+        <DaySelector date={selectedDate} onChange={setSelectedDate} />
+      </div>
 
       {isEmpty ? (
         <div className="text-center py-16 animate-fade-in">

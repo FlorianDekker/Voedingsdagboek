@@ -52,16 +52,16 @@ export default function AnalysePage() {
 
   if (!entries || !analytics) {
     return (
-      <div {...swipeHandlers} className="flex justify-center py-12">
+      <div className="flex justify-center py-12">
         <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-5" {...swipeHandlers}>
+    <div className="space-y-5">
       {/* Range selector */}
-      <div className="flex bg-surface rounded-xl p-1">
+      <div className="flex bg-surface rounded-xl p-1" {...swipeHandlers}>
         {RANGES.map(({ value, label }) => (
           <button
             key={value}
