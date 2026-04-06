@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useLiveQuery } from 'dexie-react-hooks'
 import DaySelector from '../components/dagboek/DaySelector'
 import { useEntriesForDay } from '../hooks/useEntries'
 import { db } from '../db/db'
@@ -213,6 +214,14 @@ function EditMealModal({ entry, onClose }) {
   )
   const [newIng, setNewIng] = useState('')
   const [dateTime, setDateTime] = useState(toLocalISO(entry.timestamp))
+  const [savedAsMeal, setSavedAsMeal] = useState(false)
+
+  // Check if this meal already exists as a template
+  const existingMeal = useLiveQuery(async () => {
+    if (!name.trim()) return null
+    const all = await db.meals.toArray()
+    return all.find(m => m.name.toLowerCase() === name.trim().toLowerCase()) || null
+  }, [name])
 
   function addIngredient() {
     const trimmed = newIng.trim().toLowerCase()
@@ -326,6 +335,29 @@ function EditMealModal({ entry, onClose }) {
             onChange={e => setDateTime(e.target.value)}
             className="w-full px-4 py-3 mb-4 bg-surface border border-gray-200 rounded-xl text-sm text-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
           />
+
+          {/* Save as meal template */}
+          {!existingMeal && !savedAsMeal && ingredients.length > 0 && name.trim() && (
+            <button
+              onClick={async () => {
+                await db.meals.add({
+                  name: name.trim(),
+                  category: mealType,
+                  ingredients: [...ingredients],
+                })
+                setSavedAsMeal(true)
+              }}
+              className="w-full flex items-center justify-center gap-2 py-3 mb-3 bg-surface text-[#1a1a1a] rounded-full text-sm font-medium active:scale-[0.98] transition-all border border-gray-200"
+            >
+              <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+              </svg>
+              Als maaltijd bewaren
+            </button>
+          )}
+          {savedAsMeal && (
+            <p className="text-center text-xs text-primary font-medium mb-3">Maaltijd bewaard!</p>
+          )}
 
           {/* Actions */}
           <button
