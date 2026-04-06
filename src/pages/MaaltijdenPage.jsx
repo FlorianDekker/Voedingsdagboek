@@ -3,6 +3,7 @@ import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES } from '../constants/mealTypes'
 import { getFoodEmoji } from '../utils/foodEmoji'
+import IngredientInput from '../components/invoer/IngredientInput'
 
 export default function MaaltijdenPage() {
   const [activeTab, setActiveTab] = useState(MEAL_TYPES[0].value)
@@ -265,13 +266,20 @@ function MealForm({ meal, defaultCategory, onClose, onSaved }) {
         )}
 
         <div className="flex gap-2">
-          <input
-            type="text"
+          <IngredientInput
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ingredient toevoegen..."
-            className="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            onChange={setInputValue}
+            onAdd={(selected) => {
+              if (selected) {
+                const trimmed = selected.trim().toLowerCase()
+                if (trimmed && !ingredients.includes(trimmed)) {
+                  setIngredients([...ingredients, trimmed])
+                }
+                setInputValue('')
+              } else {
+                addIngredient()
+              }
+            }}
           />
           <button
             onClick={addIngredient}

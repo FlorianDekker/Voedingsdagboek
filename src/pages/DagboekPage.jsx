@@ -5,6 +5,7 @@ import { useEntriesForDay } from '../hooks/useEntries'
 import { db } from '../db/db'
 import { formatTime, isSameDay } from '../utils/formatters'
 import { getFoodEmoji } from '../utils/foodEmoji'
+import IngredientInput from '../components/invoer/IngredientInput'
 import { MEAL_TYPES, SEVERITY_LABELS, SEVERITY_COLORS } from '../constants/mealTypes'
 
 function toLocalISO(date) {
@@ -294,13 +295,20 @@ function EditMealModal({ entry, onClose }) {
           )}
 
           <div className="flex gap-2 mb-3">
-            <input
-              type="text"
+            <IngredientInput
               value={newIng}
-              onChange={e => setNewIng(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addIngredient() } }}
-              placeholder="Ingredient toevoegen..."
-              className="flex-1 px-3 py-2.5 bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              onChange={setNewIng}
+              onAdd={(selected) => {
+                if (selected) {
+                  const trimmed = selected.trim().toLowerCase()
+                  if (trimmed && !ingredients.includes(trimmed)) {
+                    setIngredients([...ingredients, trimmed])
+                  }
+                  setNewIng('')
+                } else {
+                  addIngredient()
+                }
+              }}
             />
             <button
               onClick={addIngredient}

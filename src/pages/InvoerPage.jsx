@@ -5,6 +5,7 @@ import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
 import { Link } from 'react-router-dom'
 import { getFoodEmoji } from '../utils/foodEmoji'
 import { hasApiKey, fileToBase64, analyzeMealPhoto } from '../utils/gemini'
+import IngredientInput from '../components/invoer/IngredientInput'
 
 function toLocalISO(date) {
   const d = new Date(date)
@@ -356,13 +357,21 @@ export default function InvoerPage() {
 
           {/* Add ingredient */}
           <div className="flex gap-2 mb-5">
-            <input
-              type="text"
+            <IngredientInput
               value={newIngredient}
-              onChange={e => setNewIngredient(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAiAddIngredient() } }}
-              placeholder="Ingredient toevoegen..."
-              className="flex-1 px-3 py-2.5 bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              onChange={setNewIngredient}
+              onAdd={(selected) => {
+                if (selected) {
+                  const trimmed = selected.trim().toLowerCase()
+                  if (trimmed && !aiIngredients.includes(trimmed)) {
+                    setAiIngredients(prev => [...prev, trimmed])
+                    setAiChecked(prev => [...prev, trimmed])
+                  }
+                  setNewIngredient('')
+                } else {
+                  handleAiAddIngredient()
+                }
+              }}
             />
             <button
               onClick={handleAiAddIngredient}
@@ -449,13 +458,20 @@ export default function InvoerPage() {
             )}
 
             <div className="flex gap-2 mb-3">
-              <input
-                type="text"
+              <IngredientInput
                 value={quickNewIng}
-                onChange={e => setQuickNewIng(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleQuickAdd() } }}
-                placeholder="Ingredient toevoegen..."
-                className="flex-1 px-3 py-2.5 bg-surface border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+                onChange={setQuickNewIng}
+                onAdd={(selected) => {
+                  if (selected) {
+                    const trimmed = selected.trim().toLowerCase()
+                    if (trimmed && !quickIngredients.includes(trimmed)) {
+                      setQuickIngredients([...quickIngredients, trimmed])
+                    }
+                    setQuickNewIng('')
+                  } else {
+                    handleQuickAdd()
+                  }
+                }}
               />
               <button
                 onClick={handleQuickAdd}
