@@ -3,6 +3,7 @@ import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
 import { Link } from 'react-router-dom'
+import { getFoodEmoji } from '../utils/foodEmoji'
 import { hasApiKey, fileToBase64, analyzeMealPhoto } from '../utils/gemini'
 
 function toLocalISO(date) {
@@ -672,8 +673,11 @@ export default function InvoerPage() {
                   onClick={() => handleSelectMeal(meal)}
                   className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 px-4 py-4 text-left active:scale-[0.98] transition-all duration-150 hover:shadow-md"
                 >
-                  <p className="text-[14px] font-semibold text-[#1a1a1a]">{meal.name}</p>
-                  <p className="text-[11px] text-muted mt-0.5">{meal.ingredients.length} ingrediënten</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{getFoodEmoji(meal.ingredients, meal.category, meal.name)}</span>
+                    <p className="text-[14px] font-semibold text-[#1a1a1a]">{meal.name}</p>
+                  </div>
+                  <p className="text-[11px] text-muted mt-0.5 ml-7">{meal.ingredients.length} ingrediënten</p>
                 </button>
               ))}
 
