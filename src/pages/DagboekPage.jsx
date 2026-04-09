@@ -72,7 +72,7 @@ export default function DagboekPage() {
   const isEmpty = !entries || entries.length === 0
 
   return (
-    <div ref={pageRef}>
+    <div ref={pageRef} className="min-h-[calc(100vh-10rem)]">
       <DaySelector date={selectedDate} onChange={setSelectedDate} />
 
       {entries === undefined ? (
