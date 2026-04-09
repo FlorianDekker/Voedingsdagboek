@@ -129,14 +129,13 @@ export default function AnalysePage() {
             baselineRate={analytics.baselineRate}
             onSelectIngredient={setSelectedIngredient}
             selectedIngredient={selectedIngredient}
+            chartSlot={ingredientTimeline && (
+              <IngredientTimelineChart
+                timeline={ingredientTimeline}
+                onClose={() => setSelectedIngredient(null)}
+              />
+            )}
           />
-
-          {ingredientTimeline && (
-            <IngredientTimelineChart
-              timeline={ingredientTimeline}
-              onClose={() => setSelectedIngredient(null)}
-            />
-          )}
         </div>
 
         {/* Summary stats */}

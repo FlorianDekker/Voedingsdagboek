@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { SEVERITY_COLORS } from '../../constants/mealTypes'
 
 const RISK_STYLES = {
@@ -20,7 +21,7 @@ function getSeverityColor(avg) {
   return SEVERITY_COLORS[5]
 }
 
-export default function IngredientRiskTable({ ingredients, baselineRate, onSelectIngredient, selectedIngredient }) {
+export default function IngredientRiskTable({ ingredients, baselineRate, onSelectIngredient, selectedIngredient, chartSlot }) {
   if (!ingredients || ingredients.length === 0) {
     return (
       <div className="text-center py-10">
@@ -34,6 +35,8 @@ export default function IngredientRiskTable({ ingredients, baselineRate, onSelec
       </div>
     )
   }
+
+  const [showAll, setShowAll] = useState(false)
 
   // Split into top suspects (first 3) and rest
   const topItems = ingredients.slice(0, 3)
@@ -54,17 +57,39 @@ export default function IngredientRiskTable({ ingredients, baselineRate, onSelec
         ))}
       </div>
 
-      {/* Remaining — compact list */}
+      {/* Chart slot — between top cards and compact list */}
+      {chartSlot}
+
+      {/* Remaining — collapsible compact list */}
       {restItems.length > 0 && (
-        <div className="space-y-1.5">
-          {restItems.map((item) => (
-            <CompactIngredientRow
-              key={item.name}
-              item={item}
-              isSelected={selectedIngredient === item.name}
-              onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
-            />
-          ))}
+        <div>
+          {!showAll ? (
+            <button
+              onClick={() => setShowAll(true)}
+              className="w-full py-2.5 text-xs font-semibold text-muted hover:text-primary transition-colors"
+            >
+              Toon {restItems.length} meer ingrediënten
+            </button>
+          ) : (
+            <>
+              <div className="space-y-1.5">
+                {restItems.map((item) => (
+                  <CompactIngredientRow
+                    key={item.name}
+                    item={item}
+                    isSelected={selectedIngredient === item.name}
+                    onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => setShowAll(false)}
+                className="w-full py-2.5 text-xs font-semibold text-muted hover:text-primary transition-colors mt-1"
+              >
+                Minder tonen
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
