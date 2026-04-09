@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/db'
 import { useMealsByCategory } from '../hooks/useMeals'
 import { MEAL_TYPES, SEVERITY_COLORS } from '../constants/mealTypes'
@@ -50,8 +51,25 @@ export default function InvoerPage() {
   const activeRef = useRef(defaultIdx)
   const animatingRef = useRef(false)
 
-  const meals = useMealsByCategory(mealType) || []
+  const rawMeals = useMealsByCategory(mealType) || []
   const tabIndex = MEAL_TYPES.findIndex(t => t.value === mealType)
+
+  // Count how often each meal has been logged
+  const mealCounts = useLiveQuery(async () => {
+    const entries = await db.entries.where('type').equals('maaltijd').toArray()
+    const counts = {}
+    for (const e of entries) {
+      if (e.note) {
+        counts[e.note] = (counts[e.note] || 0) + 1
+      }
+    }
+    return counts
+  }, [])
+
+  const meals = useMemo(() => {
+    if (!mealCounts) return rawMeals
+    return [...rawMeals].sort((a, b) => (mealCounts[b.name] || 0) - (mealCounts[a.name] || 0))
+  }, [rawMeals, mealCounts])
 
   function goTo(nextIdx) {
     if (nextIdx === activeRef.current || animatingRef.current) return
