@@ -1,24 +1,7 @@
-import { useState } from 'react'
-import { SEVERITY_COLORS } from '../../constants/mealTypes'
-
 const RISK_STYLES = {
   hoog: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-500', label: 'Hoog risico', barColor: '#ef4444', dot: 'bg-red-400' },
   midden: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-500', label: 'Mogelijk risico', barColor: '#f59e0b', dot: 'bg-amber-400' },
   laag: { bg: 'bg-primary-subtle', border: 'border-primary-light', text: 'text-primary', label: 'Veilig', barColor: '#65B741', dot: 'bg-primary' },
-}
-
-const CONFIDENCE_DOTS = {
-  low: [true, false, false],
-  medium: [true, true, false],
-  high: [true, true, true],
-}
-
-function getSeverityColor(avg) {
-  if (avg <= 1.5) return SEVERITY_COLORS[1]
-  if (avg <= 2.5) return SEVERITY_COLORS[2]
-  if (avg <= 3.5) return SEVERITY_COLORS[3]
-  if (avg <= 4.5) return SEVERITY_COLORS[4]
-  return SEVERITY_COLORS[5]
 }
 
 export default function IngredientRiskTable({ ingredients, baselineRate, onSelectIngredient, selectedIngredient, chartSlot }) {
@@ -36,138 +19,25 @@ export default function IngredientRiskTable({ ingredients, baselineRate, onSelec
     )
   }
 
-  const [showAll, setShowAll] = useState(false)
-
-  // Split into top suspects (first 3) and rest
-  const topItems = ingredients.slice(0, 3)
-  const restItems = ingredients.slice(3)
-
   return (
     <div>
-      {/* Top suspects — larger cards */}
-      <div className="space-y-3 mb-3">
-        {topItems.map((item, idx) => (
-          <TopIngredientCard
+      {/* Scrollable ingredient list */}
+      <div className="max-h-[280px] overflow-y-auto space-y-1.5 rounded-xl no-scrollbar">
+        {ingredients.map((item) => (
+          <CompactIngredientRow
             key={item.name}
             item={item}
-            rank={idx + 1}
             isSelected={selectedIngredient === item.name}
             onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
           />
         ))}
       </div>
-
-      {/* Chart slot — between top cards and compact list */}
-      {chartSlot}
-
-      {/* Remaining — collapsible compact list */}
-      {restItems.length > 0 && (
-        <div>
-          {!showAll ? (
-            <button
-              onClick={() => setShowAll(true)}
-              className="w-full py-2.5 text-xs font-semibold text-muted hover:text-primary transition-colors"
-            >
-              Toon {restItems.length} meer ingrediënten
-            </button>
-          ) : (
-            <>
-              <div className="space-y-1.5">
-                {restItems.map((item) => (
-                  <CompactIngredientRow
-                    key={item.name}
-                    item={item}
-                    isSelected={selectedIngredient === item.name}
-                    onTap={() => onSelectIngredient?.(selectedIngredient === item.name ? null : item.name)}
-                  />
-                ))}
-              </div>
-              <button
-                onClick={() => setShowAll(false)}
-                className="w-full py-2.5 text-xs font-semibold text-muted hover:text-primary transition-colors mt-1"
-              >
-                Minder tonen
-              </button>
-            </>
-          )}
-        </div>
+      {ingredients.length > 5 && (
+        <p className="text-center text-[10px] text-muted mt-1">Scroll voor meer ingrediënten</p>
       )}
-    </div>
-  )
-}
 
-function TopIngredientCard({ item, rank, isSelected, onTap }) {
-  const style = RISK_STYLES[item.riskLevel]
-  const pct = Math.round(item.followRate * 100)
-  const dots = CONFIDENCE_DOTS[item.confidence]
-  const isLowConf = item.confidence === 'low'
-  const liftUp = item.lift > 1.1
-  const sevColor = item.avgSeverity > 0 ? getSeverityColor(item.avgSeverity) : '#d0d0d0'
-
-  return (
-    <div
-      onClick={onTap}
-      className={`rounded-2xl p-4 ${style.bg} border ${style.border} relative overflow-hidden cursor-pointer active:scale-[0.98] transition-all ${isSelected ? 'ring-2 ring-primary' : ''}`}
-    >
-      {/* Progress bar background */}
-      <div
-        className="absolute inset-y-0 left-0 opacity-[0.07]"
-        style={{ width: `${Math.min(pct, 100)}%`, backgroundColor: style.barColor }}
-      />
-
-      <div className="relative">
-        {/* Top row: name + risk badge */}
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2.5">
-            <span className="text-base font-bold text-[#1a1a1a] capitalize">{item.name}</span>
-            <span className={`text-xs font-bold ${liftUp ? 'text-red-400' : 'text-primary'}`}>
-              {liftUp ? '↑' : '↓'}{item.lift.toFixed(1)}x
-            </span>
-          </div>
-          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${style.text} ${style.bg}`}>
-            {style.label}
-          </span>
-        </div>
-
-        {/* Stats row */}
-        <div className="flex items-center gap-4">
-          {/* Follow rate */}
-          <div className="flex items-center gap-1.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: style.barColor }}>
-              {pct}%
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold text-[#1a1a1a]/70">klachten</p>
-              <p className="text-[10px] text-[#1a1a1a]/40">{item.timesEaten}x gegeten</p>
-            </div>
-          </div>
-
-          {/* Avg severity */}
-          {item.avgSeverity > 0 && (
-            <div className="flex items-center gap-1.5">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: sevColor }}>
-                {item.avgSeverity.toFixed(1)}
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold text-[#1a1a1a]/70">gem. ernst</p>
-                <p className="text-[10px] text-[#1a1a1a]/40">van 5</p>
-              </div>
-            </div>
-          )}
-
-          {/* Confidence */}
-          <div className="ml-auto flex items-center gap-1">
-            <div className="flex gap-0.5">
-              {dots.map((filled, i) => (
-                <div
-                  key={i}
-                  className={`w-1.5 h-1.5 rounded-full ${filled ? 'bg-[#1a1a1a]/30' : 'bg-[#1a1a1a]/10'}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Chart below the list */}
+      {chartSlot}
     </div>
   )
 }
